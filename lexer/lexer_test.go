@@ -79,3 +79,29 @@ func TestVariableDeclarations(t *testing.T) {
 
 	runTests(t, input, tests)
 }
+
+func TestIfElseStatements(t *testing.T) {
+	input := 
+		`if 5 < 10 {
+				true
+		} else {
+				false
+		}`
+
+	tests := lexerTests{
+		{token.IF, "if"},
+		{token.INT, "5"},
+		{token.LT, "<"},
+		{token.INT, "10"},
+		{token.LBRACE, "{"},
+		{token.TRUE, "true"},
+		{token.RBRACE, "}"},
+		{token.ELSE, "else"},
+		{token.LBRACE, "{"},
+		{token.FALSE, "false"},
+		{token.RBRACE, "}"},
+		{token.EOF, ""},
+	}
+
+	runTests(t, input, tests)
+}
