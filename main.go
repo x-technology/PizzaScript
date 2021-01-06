@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/pizzascript/pizzascript/repl"
 	"os"
 	"os/user"
+	"pizzascript/repl"
 )
 
 func main() {
