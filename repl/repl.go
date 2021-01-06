@@ -4,8 +4,8 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"github.com/pizzascript/pizzascript/lexer"
-	"github.com/pizzascript/pizzascript/token"
+	"pizzascript/lexer"
+	"pizzascript/token"
 )
 
 const PROMPT = ">> "

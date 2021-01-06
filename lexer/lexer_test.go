@@ -1,7 +1,7 @@
 package lexer
 
 import (
-	"github.com/pizzascript/pizzascript/token"
+	"pizzascript/token"
 
 	"testing"
 )

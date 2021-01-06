@@ -1,6 +1,6 @@
 package lexer
 
-import "github.com/pizzascript/pizzascript/token"
+import "pizzascript/token"
 
 type Lexer struct {
 	input        string
