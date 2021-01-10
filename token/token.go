@@ -41,6 +41,8 @@ const (
 	ELSE     = "ELSE"
 )
 
+var ALL_OPERATORS = []string{ASSIGN, PLUS, COMMA, COLON, SEMICOLON, LPAREN, RPAREN, LBRACE, RBRACE, MINUS, BANG, ASTERISK, SLASH, LT, GT}
+
 var keywords = map[string]TokenType{
 	"fn":  FUNCTION,
 	"var": LET,
