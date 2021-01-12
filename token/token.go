@@ -4,15 +4,16 @@ type TokenType string
 type Token struct {
 	Type    TokenType
 	Literal string
+	Complete bool
 }
 
 const (
 	ILLEGAL = "ILLEGAL"
 	EOF     = "EOF"
 	// Identifiers + literals
-	IDENT  = "IDENT"  // add, foobar, x, y, ...
-	INT    = "INT"    // 1343456
-	STRING = "STRING" // "1343456"
+	IDENT   = "IDENT"   // add, foobar, x, y, ...
+	INT     = "INT"     // 1343456
+	STRING  = "STRING"  // "1343456"
 	BOOLEAN = "BOOLEAN" // true/false
 	// Operators
 	ASSIGN = "="
@@ -25,12 +26,12 @@ const (
 	RPAREN    = ")"
 	LBRACE    = "{"
 	RBRACE    = "}"
-	MINUS    = "-"
-	BANG     = "!"
-	ASTERISK = "*"
-	SLASH    = "/"
-	LT = "<"
-	GT = ">"
+	MINUS     = "-"
+	BANG      = "!"
+	ASTERISK  = "*"
+	SLASH     = "/"
+	LT        = "<"
+	GT        = ">"
 	// Keywords
 	TYPE     = "TYPE"
 	FUNCTION = "FUNCTION"
@@ -44,10 +45,10 @@ const (
 var ALL_OPERATORS = []string{ASSIGN, PLUS, COMMA, COLON, SEMICOLON, LPAREN, RPAREN, LBRACE, RBRACE, MINUS, BANG, ASTERISK, SLASH, LT, GT}
 
 var keywords = map[string]TokenType{
-	"fn":  FUNCTION,
-	"var": LET,
-	"val": LET,
-	"string":  TYPE,
+	"fn":     FUNCTION,
+	"var":    LET,
+	"val":    LET,
+	"string": TYPE,
 	"true":   TRUE,
 	"false":  FALSE,
 	"if":     IF,
