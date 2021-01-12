@@ -35,93 +35,46 @@ func (l *Lexer) Print() {
 	}
 }
 
-func (l *Lexer) Tokens() rxgo.Observable {
-	currentStr := ""
-	// prevStr := ""
+type InterToken struct {
+	Return string
+	Save string
+}
 
-	return l.observable.
+func (l *Lexer) Tokens() rxgo.Observable {
+	return rxgo.Concat([]rxgo.Observable{
+				l.observable,
+				rxgo.Just("END")(),
+			}).
 			Filter(func(i interface{}) bool {
 				var str = i.(string)
 				ch := []byte(str)[0]
 				return !isWhitespace(ch)
 			}).
-			// DistinctUntilChanged(func(_ context.Context, i interface{}) (interface{}, error) {
-			// 	var str = i.(string)
-			// 	ch := []byte(str)[0]
-			// 	currentStr += str
-			// 	// prevStr = str
-			// 	fmt.Println("distinct: ", currentStr)
-			// 	return ch, nil
-			// }).
-			// FlatMap(func(i rxgo.Item) rxgo.Observable {
-			// 	var str = i.V.(string)
-			// 	// ch := []byte(str)[0]
-
-			// 	if (len(currentStr) > 0) {
-			// 		currentStr += str
-			// 		return nil
-			// 	} else {
-			// 		currentStr = ""
-			// 	}
-
-			// 	return rxgo.Just(currentStr)()
-			// }).
 			Scan(func(_ context.Context, acc interface{}, elem interface{}) (interface{}, error) {
-				fmt.Println("acc: ", acc, elem)
-				// if acc == nil {
-				// 	return elem, nil
-				// }
+				var tok InterToken
+				tok, isToken := acc.(InterToken)
+				tok.Return = ""
 
-				var tok token.Token
-				tok, isToken := acc.(token.Token)
-				
-				// if acc is an operator, skip processing
-				if (isOperator(elem.(string))) {
-					return elem, nil
-				}
-
-				// if acc is an operator, skip processing
-				if (acc != nil && !isToken && isOperator(acc.(string))) {
-					acc = ""
+				if (!isToken || (isNumber([]byte(tok.Save)[0]) && isNumber([]byte(elem.(string))[0]))) {
+					tok.Save += elem.(string)
+				} else {
+					tok.Return = tok.Save
+					tok.Save = elem.(string)
 				}
 				
-				// if acc is an integer, accumulate string
-				var str = elem.(string)
-				ch := []byte(str)[0]
-				if (isNumber(ch)) {
-					if (!isToken) {
-						tok.Type = token.INT
-					}
-					// if (isToken) {
-					// 	tok.Complete = true
-					// }
-					tok.Literal = tok.Literal + elem.(string)
-
-					return tok, nil
-				}
-				
-				return nil, nil
+				return tok, nil
 			}).
 			Filter(func(i interface{}) bool {
-				return i != nil
+				tok := i.(InterToken)
+
+				return tok.Return != ""
 			}).
 			Map(func(_ context.Context, i interface{}) (interface{}, error) {
 				var tok token.Token
-				// tok, ok := i.(token.Token)
-
-				// if (!ok) {
-				tok.Literal = currentStr // i.(string) //currentStr
-				// 	// TODO make get token type function, return token type?
+				tok.Literal = i.(InterToken).Return
 				tok.Type = token.INT
-				// }
-
-				fmt.Println("map: ", currentStr)
-
-				// sort.Strings(token.ALL_OPERATORS)
-				// var index = sort.SearchStrings(token.ALL_OPERATORS, str)
-				// 	var tok token.Token = newToken(token.TokenType(token.ALL_OPERATORS[index]), ch)
 				
-				return currentStr, nil
+				return tok, nil
 			})
 }
 

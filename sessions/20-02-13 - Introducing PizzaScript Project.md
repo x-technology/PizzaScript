@@ -115,6 +115,17 @@ map:  11-00
 {INT 11-00}
 ```
 
+other problems and final flow with Filter, Scan, Filter (swap)
+
+11=00
+
+scan 1: save 1
+scan 11: save 11
+scan 11=: return 11, save =
+scan =0: return =, save 0
+scan 00: save 00
+scan .: return 00
+
   - Explain language techniques
 
 # TODO
@@ -129,6 +140,14 @@ i.V.(string)
 ```
 
 - check concept channels, goroutine
+
+# Feedback
+
+# Summary
+
+- Learn lots of Go specifics
+- Learn Rx operators
+- Program
 
 ## Links
 
