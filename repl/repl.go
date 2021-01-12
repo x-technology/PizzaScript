@@ -8,13 +8,16 @@ import (
 )
 
 const PROMPT = ">> "
+
 // 1+2
 
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
 
 	// debug
-	l := lexer.New("1=0")
+	input := "11=00"
+	fmt.Println(input)
+	l := lexer.New(input)
 	l.Print()
 
 	for {

@@ -87,6 +87,34 @@ func (l *Lexer) Tokens() rxgo.Observable {
 	})
 }
 ```
+
+```bash
+>> 11-00
+distinct:  1
+distinct:  11
+distinct:  11-
+map:  11-
+map:  11-
+distinct:  11-0
+map:  11-0
+{INT 11-}
+distinct:  11-00
+{INT 11-}
+{INT 11-0}
+>> 11-00
+distinct:  1
+distinct:  11
+distinct:  11-
+map:  11-
+map:  11-
+{INT 11-}
+{INT 11-}
+distinct:  11-0
+distinct:  11-00
+map:  11-00
+{INT 11-00}
+```
+
   - Explain language techniques
 
 # TODO
@@ -102,3 +130,6 @@ i.V.(string)
 
 - check concept channels, goroutine
 
+## Links
+
+- [How to choose operator?](http://xgrommx.github.io/rx-book/content/which_operator_do_i_use/instance_operators.html)

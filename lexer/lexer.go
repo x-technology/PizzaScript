@@ -4,8 +4,10 @@ import (
 	"context"
 	"fmt"
 	"strings"
-	// "sort"
+
+	"sort"
 	"pizzascript/token"
+
 	"github.com/reactivex/rxgo/v2"
 )
 
@@ -29,60 +31,98 @@ func New(input string) *Lexer {
 
 func (l *Lexer) Print() {
 	for item := range l.Tokens().Observe() {
-    fmt.Println(item.V)
+		fmt.Println(item.V)
 	}
 }
 
 func (l *Lexer) Tokens() rxgo.Observable {
-	return rxgo.Merge([]rxgo.Observable{
-		// operators
-		// l.observable.
-		// Filter(func(i interface{}) bool {
-		// 	var str = i.(string)
+	currentStr := ""
+	// prevStr := ""
 
-		// 	sort.Strings(token.ALL_OPERATORS)
-		// 	var index = sort.SearchStrings(token.ALL_OPERATORS, str)
+	return l.observable.
+			Filter(func(i interface{}) bool {
+				var str = i.(string)
+				ch := []byte(str)[0]
+				return !isWhitespace(ch)
+			}).
+			// DistinctUntilChanged(func(_ context.Context, i interface{}) (interface{}, error) {
+			// 	var str = i.(string)
+			// 	ch := []byte(str)[0]
+			// 	currentStr += str
+			// 	// prevStr = str
+			// 	fmt.Println("distinct: ", currentStr)
+			// 	return ch, nil
+			// }).
+			// FlatMap(func(i rxgo.Item) rxgo.Observable {
+			// 	var str = i.V.(string)
+			// 	// ch := []byte(str)[0]
 
-		// 	return token.ALL_OPERATORS[index] == str
-		// }).
-		// Map(func(_ context.Context, i interface{})(interface{}, error) {
-		// 	var str = i.(string)
-		// 	ch := []byte(str)[0]
-		// 	var index = sort.SearchStrings(token.ALL_OPERATORS, str)
+			// 	if (len(currentStr) > 0) {
+			// 		currentStr += str
+			// 		return nil
+			// 	} else {
+			// 		currentStr = ""
+			// 	}
 
-		// 	var tok token.Token = newToken(token.TokenType(token.ALL_OPERATORS[index]), ch)
-		// 	return tok, nil
-		// }),
-		// numbers
-		l.observable.
-		// Filter(func(i interface{}) bool {
-		// 	var str = i.(string)
-		// 	ch := []byte(str)[0]
+			// 	return rxgo.Just(currentStr)()
+			// }).
+			Scan(func(_ context.Context, acc interface{}, elem interface{}) (interface{}, error) {
+				fmt.Println("acc: ", acc, elem)
+				// if acc == nil {
+				// 	return elem, nil
+				// }
 
-		// 	return isNumber(ch)
-		// }).
-		DistinctUntilChanged(func(_ context.Context, i interface{}) (interface{}, error) {
-			var str = i.(string)
-			ch := []byte(str)[0]
-			fmt.Println(str)
-	
-			return isNumber(ch), nil
-		}).
-		// Reduce(func(_ context.Context, acc interface{}, elem interface{}) (interface{}, error) {
-		// 	if acc == nil {
-		// 		return elem, nil
-		// 	}
-		// 	return acc.(string) + elem.(string), nil
-		// }),
-		// SumInt64()
-		Map(func(_ context.Context, i interface{})(interface{}, error) {
-			var str = i.(string)
-			ch := []byte(str)[0]
+				var tok token.Token
+				tok, isToken := acc.(token.Token)
+				
+				// if acc is an operator, skip processing
+				if (isOperator(elem.(string))) {
+					return elem, nil
+				}
 
-			var tok token.Token = newToken(token.INT, ch)
-			return tok, nil
-		}),
-	})
+				// if acc is an operator, skip processing
+				if (acc != nil && !isToken && isOperator(acc.(string))) {
+					acc = ""
+				}
+				
+				// if acc is an integer, accumulate string
+				var str = elem.(string)
+				ch := []byte(str)[0]
+				if (isNumber(ch)) {
+					if (!isToken) {
+						tok.Type = token.INT
+					}
+					// if (isToken) {
+					// 	tok.Complete = true
+					// }
+					tok.Literal = tok.Literal + elem.(string)
+
+					return tok, nil
+				}
+				
+				return nil, nil
+			}).
+			Filter(func(i interface{}) bool {
+				return i != nil
+			}).
+			Map(func(_ context.Context, i interface{}) (interface{}, error) {
+				var tok token.Token
+				// tok, ok := i.(token.Token)
+
+				// if (!ok) {
+				tok.Literal = currentStr // i.(string) //currentStr
+				// 	// TODO make get token type function, return token type?
+				tok.Type = token.INT
+				// }
+
+				fmt.Println("map: ", currentStr)
+
+				// sort.Strings(token.ALL_OPERATORS)
+				// var index = sort.SearchStrings(token.ALL_OPERATORS, str)
+				// 	var tok token.Token = newToken(token.TokenType(token.ALL_OPERATORS[index]), ch)
+				
+				return currentStr, nil
+			})
 }
 
 func (l *Lexer) NextToken() token.Token {
@@ -143,6 +183,10 @@ func (l *Lexer) skipWhitespace() {
 	}
 }
 
+func isWhitespace(ch byte) bool {
+	return ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r'
+}
+
 func (l *Lexer) readString() string {
 	l.readChar()
 	position := l.position
@@ -189,4 +233,11 @@ func (l *Lexer) readChar() {
 
 func newToken(tokenType token.TokenType, ch byte) token.Token {
 	return token.Token{Type: tokenType, Literal: string(ch)}
+}
+
+func isOperator(str string) bool {
+	sort.Strings(token.ALL_OPERATORS)
+	var index = sort.SearchStrings(token.ALL_OPERATORS, str)
+
+	return token.ALL_OPERATORS[index] == str
 }
