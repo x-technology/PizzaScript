@@ -42,40 +42,42 @@ type InterToken struct {
 
 func (l *Lexer) Tokens() rxgo.Observable {
 	return rxgo.Concat([]rxgo.Observable{
-				l.observable,
-				rxgo.Just("END")(),
-			}).
-			Filter(func(i interface{}) bool {
-				var str = i.(string)
-				ch := []byte(str)[0]
-				return !isWhitespace(ch)
-			}).
-			Scan(func(_ context.Context, acc interface{}, elem interface{}) (interface{}, error) {
-				var tok InterToken
-				tok, isToken := acc.(InterToken)
-				tok.Return = ""
+			l.observable,
+			// TODO fix when tokenize identifiers
+			rxgo.Just("END")(),
+		}).
+		Filter(func(i interface{}) bool {
+			var str = i.(string)
+			ch := []byte(str)[0]
+			return !isWhitespace(ch)
+		}).
+		Scan(func(_ context.Context, acc interface{}, elem interface{}) (interface{}, error) {
+			var tok InterToken
+			tok, isToken := acc.(InterToken)
+			tok.Return = ""
 
-				if (!isToken || (isNumber([]byte(tok.Save)[0]) && isNumber([]byte(elem.(string))[0]))) {
-					tok.Save += elem.(string)
-				} else {
-					tok.Return = tok.Save
-					tok.Save = elem.(string)
-				}
-				
-				return tok, nil
-			}).
-			Filter(func(i interface{}) bool {
-				tok := i.(InterToken)
+			// TODO change to types on string recognition
+			if (!isToken || (isNumber([]byte(tok.Save)[0]) && isNumber([]byte(elem.(string))[0]))) {
+				tok.Save += elem.(string)
+			} else {
+				tok.Return = tok.Save
+				tok.Save = elem.(string)
+			}
+			
+			return tok, nil
+		}).
+		Filter(func(i interface{}) bool {
+			tok := i.(InterToken)
 
-				return tok.Return != ""
-			}).
-			Map(func(_ context.Context, i interface{}) (interface{}, error) {
-				var tok token.Token
-				tok.Literal = i.(InterToken).Return
-				tok.Type = token.INT
-				
-				return tok, nil
-			})
+			return tok.Return != ""
+		}).
+		Map(func(_ context.Context, i interface{}) (interface{}, error) {
+			var tok token.Token
+			tok.Literal = i.(InterToken).Return
+			tok.Type = token.INT
+			
+			return tok, nil
+		})
 }
 
 func (l *Lexer) NextToken() token.Token {
