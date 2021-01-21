@@ -11,6 +11,7 @@
 - Theory (30 minutes)
   - Programming Languages Intro
   - Lexer, Parser and so on
+	- jvm
 - Code Review (20 minutes)
   - Go needed concepts - modules, goroutines, channels
   - ReactiveX, rxgo
