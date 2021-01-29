@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	"sort"
 	"pizzascript/token"
+	"sort"
 
 	"github.com/reactivex/rxgo/v2"
 )
@@ -35,47 +35,51 @@ func (l *Lexer) Print() {
 	}
 }
 
-type InterToken struct {
+type interToken struct {
 	Return string
-	Save string
+	Save   string
 }
 
 func (l *Lexer) Tokens() rxgo.Observable {
 	return rxgo.Concat([]rxgo.Observable{
-			l.observable,
-			// TODO fix when tokenize identifiers
-			rxgo.Just("END")(),
-		}).
+		l.observable,
+		// TODO fix when tokenize identifiers
+		rxgo.Just("END")(),
+	}).
 		Filter(func(i interface{}) bool {
 			var str = i.(string)
 			ch := []byte(str)[0]
 			return !isWhitespace(ch)
 		}).
 		Scan(func(_ context.Context, acc interface{}, elem interface{}) (interface{}, error) {
-			var tok InterToken
-			tok, isToken := acc.(InterToken)
+			var tok interToken
+			tok, isToken := acc.(interToken)
 			tok.Return = ""
 
 			// TODO change to types on string recognition
-			if (!isToken || (isNumber([]byte(tok.Save)[0]) && isNumber([]byte(elem.(string))[0]))) {
+			if !isToken || (isNumber([]byte(tok.Save)[0]) && isNumber([]byte(elem.(string))[0])) {
 				tok.Save += elem.(string)
 			} else {
 				tok.Return = tok.Save
 				tok.Save = elem.(string)
 			}
-			
+
 			return tok, nil
 		}).
 		Filter(func(i interface{}) bool {
-			tok := i.(InterToken)
+			tok := i.(interToken)
 
 			return tok.Return != ""
 		}).
 		Map(func(_ context.Context, i interface{}) (interface{}, error) {
 			var tok token.Token
-			tok.Literal = i.(InterToken).Return
+			tok.Literal = i.(interToken).Return
 			tok.Type = token.INT
-			
+
+			if isOperator(tok.Literal) {
+				tok.Type = token.TokenType(tok.Literal)
+			}
+
 			return tok, nil
 		})
 }

@@ -200,8 +200,9 @@ As soon as the first article gets 10 different people upvotes, we immediately st
   - not an expert in language
   - not an expert in theory
 
-- [Crockford - `5` not very readable article](http://crockford.com/javascript/)
+- [Crockford](http://crockford.com/javascript/)
 - [`8` Cool introduction to PL grammars](http://www.mollypages.org/page/grammar/index.mp)
+
 - Use existing language??
 - Pratt parser
 - regular activities - twitter start in January
@@ -250,9 +251,12 @@ Should be something amazing!
 - [Language Implementation Patterns](https://www.oreilly.com/library/view/language-implementation-patterns/9781680500097/)
 - [Emerging Programming Languages](https://www.oreilly.com/library/view/emerging-programming-languages/9781492082590/)
 - [Top Down Operator Precedence - Vaughan Pratt](...)
+- [Pratt Parsers: Expression Parsing Made Easy by Bob Nystrom](http://journal.stuffwithstuff.com/2011/03/19/pratt-parsers-expression-parsing-made-easy/)
 
 TODO links
 
 Rob Pike - Lexical Scanning in Go - https://www.youtube.com/watch?v=HxaD_trXwRE
 
 https://www.youtube.com/watch?v=PXoG0WX0r_E
+
+TODO https://dev.to/jrop/pratt-parsing
