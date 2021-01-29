@@ -5,20 +5,24 @@ import (
 	"fmt"
 	"io"
 	"pizzascript/lexer"
+	"pizzascript/parser"
+	"pizzascript/utils/log"
 )
 
 const PROMPT = ">> "
 
-// 1+2
-
+// Start executes repl, to try PizzaScript with standard input/output
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
 
 	// debug
-	input := "11=00"
-	fmt.Println(input)
+	input := "1 + 2"
+	log.Info("lexer & parser example", input)
+
 	l := lexer.New(input)
 	l.Print()
+	p := parser.New(l)
+	p.Print()
 
 	for {
 		fmt.Fprintf(out, PROMPT)
@@ -30,5 +34,8 @@ func Start(in io.Reader, out io.Writer) {
 		line := scanner.Text()
 		l := lexer.New(line)
 		l.Print()
+
+		p := parser.New(l)
+		p.Print()
 	}
 }
