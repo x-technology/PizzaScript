@@ -113,44 +113,38 @@ func (p *Parser) Tree() rxgo.Observable {
 					return newIt, nil
 				} else {
 					// TODO dry, make linearize func, :133
-					it.left = led(prevIt.left, *prevIt.operator, it.left)
-					it.stack = it.stack[:len(it.stack)-1]
+					for len(it.stack) > 0 && bp(it.operator) < bp(prevIt.operator) {
+						prevIt = &it.stack[len(it.stack)-1]
 
-					right := nud(next)
-					it.left = led(it.left, *it.operator, right)
+						it.left = led(prevIt.left, *prevIt.operator, it.left)
+						it.stack = it.stack[:len(it.stack)-1]
+					}
+
+					// TODO dry
+					var newIt iterator
+					newIt.left = nud(next)
+					newIt.stack = append(it.stack, it)
+
+					return newIt, nil
 				}
 			} else {
 				it.operator = &next
 			}
 
 			return it, nil
-		}) //.
-		// TODO make last iteration
-		// Map(func(_ context.Context, i interface{}) (interface{}, error) {
-		// 	it := i.(iterator)
-		// 	var prevIt *iterator
-
-		// 	for len(it.stack) > 0 {
-		// 		prevIt = &it.stack[len(it.stack)-1]
-
-		// 		it.left = led(prevIt.left, *prevIt.operator, it.left)
-		// 		it.stack = it.stack[:len(it.stack)-1]
-		// 	}
-
-		// 	return it, nil
-		// })
+		})
 
 	return tree
 }
 
-func (p *Parser) Print() {
+func (p *Parser) Print() string {
 	// for item := range p.tree.Observe() {
 	// 	it := item.V.(iterator)
 	// 	it.left.ToString()
 	// 	fmt.Println("---")
 	// }
 
-	fmt.Println("---")
+	// fmt.Println("---")
 	lastItem, _ := p.tree.Last().Get()
 	it := lastItem.V.(iterator)
 	var prevIt *iterator
@@ -162,5 +156,7 @@ func (p *Parser) Print() {
 		it.stack = it.stack[:len(it.stack)-1]
 	}
 
-	it.left.ToString()
+	str := it.left.ToString()
+	fmt.Println(str)
+	return str
 }
