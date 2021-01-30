@@ -12,17 +12,18 @@ type Node struct {
 }
 
 func (n *Node) ToString() {
-	fmt.Println("token", n.Token)
+	fmt.Print("{", n.Token.Literal)
 
 	if n.Left != nil {
-		fmt.Print("left")
+		fmt.Print(",")
 		n.Left.ToString()
 	}
 
 	if n.Right != nil {
-		fmt.Print("right")
+		fmt.Print(",")
 		n.Right.ToString()
 	}
+	fmt.Print("}")
 }
 
 type Tree struct {

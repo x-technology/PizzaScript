@@ -2,6 +2,7 @@ package parser
 
 import (
 	"context"
+	"fmt"
 	"pizzascript/ast"
 	"pizzascript/lexer"
 	"pizzascript/token"
@@ -54,16 +55,38 @@ func led(left ast.Node, operator token.Token, right ast.Node) ast.Node {
 	return ast.Node{Left: &left, Token: operator, Right: &right}
 }
 
+const (
+	none = iota
+	plus
+	mul
+)
+
+func bp(tok *token.Token) int {
+	if precendence, ok := precendences[string(tok.Type)]; ok {
+		return precendence
+	}
+
+	return none
+}
+
+var precendences = map[string]int{
+	token.PLUS:     plus,
+	token.ASTERISK: mul,
+}
+
 type iterator struct {
 	left     ast.Node
 	operator *token.Token
+	stack    []iterator
 }
 
 func (p *Parser) Tree() rxgo.Observable {
 	tree := p.lexer.Tokens().
 		// 1 + 2     -> {1, +, 2}
-		// 1 + 2 * 3 -> {1, +, {2, *, 3}}
 		// 1 * 2 + 3 -> {{1, *, 2}, + , 3}
+		// 1 + 2 * 3 -> {1, +, {2, *, 3}}
+		// TODO change to reduce
+		// TODO move to separate func
 		Scan(func(_ context.Context, acc interface{}, elem interface{}) (interface{}, error) {
 			it, isIterator := acc.(iterator)
 			next := elem.(token.Token)
@@ -76,24 +99,68 @@ func (p *Parser) Tree() rxgo.Observable {
 			}
 
 			if it.operator != nil {
-				// maybe not nud
-				right := nud(next)
-				it.left = led(it.left, *it.operator, right)
-				it.operator = nil
+				var prevIt *iterator
+				if len(it.stack) > 0 {
+					prevIt = &it.stack[len(it.stack)-1]
+				}
+
+				if prevIt == nil || bp(it.operator) >= bp(prevIt.operator) {
+					var newIt iterator
+					// do one step ahead, same as :95
+					newIt.left = nud(next)
+					newIt.stack = append(it.stack, it)
+
+					return newIt, nil
+				} else {
+					// TODO dry, make linearize func, :133
+					it.left = led(prevIt.left, *prevIt.operator, it.left)
+					it.stack = it.stack[:len(it.stack)-1]
+
+					right := nud(next)
+					it.left = led(it.left, *it.operator, right)
+				}
 			} else {
 				it.operator = &next
 			}
 
 			return it, nil
-		})
+		}) //.
+		// TODO make last iteration
+		// Map(func(_ context.Context, i interface{}) (interface{}, error) {
+		// 	it := i.(iterator)
+		// 	var prevIt *iterator
+
+		// 	for len(it.stack) > 0 {
+		// 		prevIt = &it.stack[len(it.stack)-1]
+
+		// 		it.left = led(prevIt.left, *prevIt.operator, it.left)
+		// 		it.stack = it.stack[:len(it.stack)-1]
+		// 	}
+
+		// 	return it, nil
+		// })
 
 	return tree
 }
 
 func (p *Parser) Print() {
-	for item := range p.tree.Observe() {
-		it := item.V.(iterator)
-		it.left.ToString()
-		// fmt.Println(item.V)
+	// for item := range p.tree.Observe() {
+	// 	it := item.V.(iterator)
+	// 	it.left.ToString()
+	// 	fmt.Println("---")
+	// }
+
+	fmt.Println("---")
+	lastItem, _ := p.tree.Last().Get()
+	it := lastItem.V.(iterator)
+	var prevIt *iterator
+
+	for len(it.stack) > 0 {
+		prevIt = &it.stack[len(it.stack)-1]
+
+		it.left = led(prevIt.left, *prevIt.operator, it.left)
+		it.stack = it.stack[:len(it.stack)-1]
 	}
+
+	it.left.ToString()
 }

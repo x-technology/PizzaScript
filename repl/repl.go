@@ -16,11 +16,15 @@ func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
 
 	// debug
-	input := "1 + 2"
+	// input := "1 + 2 * 3"
+	// input := "1 * 2 + 3"
+	input := "1+3+4+5"
+
 	log.Info("lexer & parser example", input)
 
 	l := lexer.New(input)
-	l.Print()
+	// l.Print()
+
 	p := parser.New(l)
 	p.Print()
 
@@ -33,7 +37,7 @@ func Start(in io.Reader, out io.Writer) {
 
 		line := scanner.Text()
 		l := lexer.New(line)
-		l.Print()
+		// l.Print()
 
 		p := parser.New(l)
 		p.Print()
