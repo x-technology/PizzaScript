@@ -1,7 +1,6 @@
 package ast
 
 import (
-	"fmt"
 	"pizzascript/token"
 )
 
@@ -11,19 +10,19 @@ type Node struct {
 	Right *Node
 }
 
-func (n *Node) ToString() {
-	fmt.Print("{", n.Token.Literal)
+func (n *Node) ToString() string {
+	res := "{" + n.Token.Literal
 
 	if n.Left != nil {
-		fmt.Print(",")
-		n.Left.ToString()
+		res += "," + n.Left.ToString()
 	}
 
 	if n.Right != nil {
-		fmt.Print(",")
-		n.Right.ToString()
+		res += "," + n.Right.ToString()
 	}
-	fmt.Print("}")
+
+	res += "}"
+	return res
 }
 
 type Tree struct {

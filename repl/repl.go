@@ -9,7 +9,7 @@ import (
 	"pizzascript/utils/log"
 )
 
-const PROMPT = ">> "
+const PROMPT = "\n>> "
 
 // Start executes repl, to try PizzaScript with standard input/output
 func Start(in io.Reader, out io.Writer) {
@@ -18,7 +18,8 @@ func Start(in io.Reader, out io.Writer) {
 	// debug
 	// input := "1 + 2 * 3"
 	// input := "1 * 2 + 3"
-	input := "1+3+4+5"
+	// input := "1+2+3+4"
+	input := "1*2+3*4"
 
 	log.Info("lexer & parser example", input)
 
