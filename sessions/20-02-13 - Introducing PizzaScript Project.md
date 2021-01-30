@@ -154,21 +154,28 @@ function expr() {
 }
 
 // LED(left, operator) = Tree(left, operator, right=next())
-
 ```
 
+```
+// todo change to expr(bp(operator))
+right := nud(next)
+it.left = led(it.left, *it.operator, right)
+```
 
+that just eats everything from left to right
+
+second step
 
 ```js
 function expr(rbp = 0) {
 	let left = nud(next())
 	while (bp(peek()) > rbp)
-			left = led(left, next())
- LED(left, operator) = Tree(left, operator, right=expr(bp(operator)))
+    left = led(left, next())
+    // LED(left, operator) = Tree(left, operator, right=expr(bp(operator)))
 	return left
 }
-```
 
+```
 
 current implementation
 
@@ -383,6 +390,9 @@ i.V.(string)
   - More on ReactiveX operators?
 
 # Summary
+
+- Use appropiate tools
+- First implement draft algorithm, than polish
 
 - Learn lots of Go specifics
 - Learn Rx operators
