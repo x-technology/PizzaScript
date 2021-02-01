@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"pizzascript/eval"
 	"pizzascript/lexer"
 	"pizzascript/parser"
 	"pizzascript/utils/log"
@@ -19,7 +20,9 @@ func Start(in io.Reader, out io.Writer) {
 	// input := "1 + 2 * 3"
 	// input := "1 * 2 + 3"
 	// input := "1+2+3+4"
-	input := "1*2+3*4"
+	// input := "1*2+3*4"
+	// input := "+1"
+	input := "2+1"
 
 	log.Info("lexer & parser example", input)
 
@@ -28,6 +31,9 @@ func Start(in io.Reader, out io.Writer) {
 
 	p := parser.New(l)
 	p.Print()
+
+	e := eval.New(p)
+	fmt.Println(" = ", e.Eval())
 
 	for {
 		fmt.Fprintf(out, PROMPT)
@@ -42,5 +48,8 @@ func Start(in io.Reader, out io.Writer) {
 
 		p := parser.New(l)
 		p.Print()
+		e = eval.New(p)
+
+		fmt.Println(" = ", e.Eval())
 	}
 }

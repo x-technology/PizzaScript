@@ -6,8 +6,6 @@ import (
 	"pizzascript/ast"
 	"pizzascript/lexer"
 	"pizzascript/token"
-
-	"github.com/reactivex/rxgo/v2"
 )
 
 type (
@@ -19,7 +17,7 @@ type (
 // > A parser is a software component that takes input data (frequently text) and builds a data structure – often some kind of parse tree, abstract syntax tree or other hierarchical structure, giving a structural representation of the input while checking for correct syntax (c) Wikipedia
 type Parser struct {
 	lexer          *lexer.Lexer
-	tree           rxgo.Observable
+	tree           ast.Node
 	prefixParseFns map[token.TokenType]prefixParseFn
 	infixParseFns  map[token.TokenType]infixParseFn
 }
@@ -80,7 +78,7 @@ type iterator struct {
 	stack    []iterator
 }
 
-func (p *Parser) Tree() rxgo.Observable {
+func (p *Parser) Tree() ast.Node {
 	tree := p.lexer.Tokens().
 		// 1 + 2     -> {1, +, 2}
 		// 1 * 2 + 3 -> {{1, *, 2}, + , 3}
@@ -134,18 +132,7 @@ func (p *Parser) Tree() rxgo.Observable {
 			return it, nil
 		})
 
-	return tree
-}
-
-func (p *Parser) Print() string {
-	// for item := range p.tree.Observe() {
-	// 	it := item.V.(iterator)
-	// 	it.left.ToString()
-	// 	fmt.Println("---")
-	// }
-
-	// fmt.Println("---")
-	lastItem, _ := p.tree.Last().Get()
+	lastItem, _ := tree.Last().Get()
 	it := lastItem.V.(iterator)
 	var prevIt *iterator
 
@@ -156,7 +143,13 @@ func (p *Parser) Print() string {
 		it.stack = it.stack[:len(it.stack)-1]
 	}
 
-	str := it.left.ToString()
+	return it.left
+}
+
+func (p *Parser) Print() string {
+	lastItem := p.Tree()
+
+	str := lastItem.ToString()
 	fmt.Println(str)
 	return str
 }
