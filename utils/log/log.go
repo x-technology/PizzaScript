@@ -36,10 +36,6 @@ var (
 
 // Err shows error while processing application
 func Err(args ...interface{}) {
-	if options.level < err {
-		return
-	}
-
 	errorLogger.Fatalln(args...)
 }
 
