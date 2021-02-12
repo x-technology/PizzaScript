@@ -164,7 +164,7 @@ var a1573: string = "null"
 
 ### Generics
 
-We declare and reserve generics functionality without description.
+We declare and reserve generics functionality for the future without description and obligations.
 
 ### White space
 
@@ -260,3 +260,5 @@ Rob Pike - Lexical Scanning in Go - https://www.youtube.com/watch?v=HxaD_trXwRE
 https://www.youtube.com/watch?v=PXoG0WX0r_E
 
 TODO https://dev.to/jrop/pratt-parsing
+
+- [WebAssembly AST Playground](http://ast.run/)
