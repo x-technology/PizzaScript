@@ -11,6 +11,23 @@ type lexerTests []struct {
 	expectedLiteral string
 }
 
+func TestIsWhiteSpace(t *testing.T) {
+	tests := map[string]bool{
+		" " : true,
+		"\n" : true,
+		"\r" : true,
+		"\t" : true,
+		token.PLUS: false,
+		"a": false,
+	}
+
+	for i, isW := range tests {
+		if isW != isWhitespace(i) {
+			t.Fatalf("whitespace wrong. expected=%t, got=%t, where=%q", isW, isStrWhitespace(i), i)
+		}
+	}
+}
+
 func runTests(t *testing.T, input string, tests lexerTests) {
 	l := New(input)
 	t.Logf("Test [%q]:", input)
@@ -18,14 +35,14 @@ func runTests(t *testing.T, input string, tests lexerTests) {
 		tok := l.NextToken()
 		if tok.Type != tt.expectedType {
 			t.Fatalf("[%d] - tokentype wrong. expected=%q, got=%q, where=%q",
-			i, tt.expectedType, tok.Type, tok.Literal)
+				i, tt.expectedType, tok.Type, tok.Literal)
 		}
 		if tok.Literal != tt.expectedLiteral {
 			t.Fatalf("[%d] - literal wrong. expected=%q, got=%q",
-			i, tt.expectedLiteral, tok.Literal)
+				i, tt.expectedLiteral, tok.Literal)
 		}
 		t.Logf("[%d] ok - expected=%q, got=%q, where=%q",
-		i, tt.expectedType, tok.Type, tok.Literal)
+			i, tt.expectedType, tok.Type, tok.Literal)
 	}
 }
 
@@ -81,7 +98,7 @@ func TestVariableDeclarations(t *testing.T) {
 }
 
 func TestIfElseStatements(t *testing.T) {
-	input := 
+	input :=
 		`if 5 < 10 {
 				true
 		} else {

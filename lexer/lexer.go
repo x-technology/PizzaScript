@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"unicode"
 
 	"pizzascript/token"
 	"sort"
@@ -48,8 +49,7 @@ func (l *Lexer) Tokens() rxgo.Observable {
 	}).
 		Filter(func(i interface{}) bool {
 			var str = i.(string)
-			ch := []byte(str)[0]
-			return !isWhitespace(ch)
+			return !isWhitespace(str)
 		}).
 		Scan(func(_ context.Context, acc interface{}, elem interface{}) (interface{}, error) {
 			var tok interToken
@@ -142,8 +142,8 @@ func (l *Lexer) skipWhitespace() {
 	}
 }
 
-func isWhitespace(ch byte) bool {
-	return ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r'
+func isWhitespace(ch string) bool {
+	return ch == " " || ch == "\t" || ch == "\n" || ch == "\r"
 }
 
 func (l *Lexer) readString() string {
@@ -178,6 +178,15 @@ func isLetter(ch byte) bool {
 
 func isNumber(ch byte) bool {
 	return '0' <= ch && ch <= '9'
+}
+
+func isInt(s string) bool {
+	for _, c := range s {
+		if !unicode.IsDigit(c) {
+			return false
+		}
+	}
+	return true
 }
 
 func (l *Lexer) readChar() {
