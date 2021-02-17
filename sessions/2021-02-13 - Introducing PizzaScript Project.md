@@ -1,16 +1,9 @@
 # Introducing `PizzaScript` - Writing Lexer with `Golang` and `RxGo`
 
-## [🐦AlexKorzhikov](https://twitter.com/AlexKorzhikov), [korzio](https://github.com/korzio), 13 of February 2021
-
-![alex](../assets/alex-portret-small.png)
-
-👋JavaScript, Golang, Java, DevOps @ING
-
 - About us
 - PizzaScript
-  - Technologies
-  - Examples
   - Goals
+  - Examples
 - Theory
   - Programming Languages
   - Lexer, Parser
@@ -30,6 +23,18 @@
 - and have fun! 👋
 
 Copyright (c) 2021 x-technology
+
+## [🐦 AlexKorzhikov](https://twitter.com/AlexKorzhikov), [korzio](https://github.com/korzio), 13 of February 2021
+
+![alex korzhikov](../assets/alex-portret-small.png)
+
+👋 JavaScript, Golang, Java, DevOps @ING
+
+## [Igor Smirnov](https://smithio.medium.com/)
+
+![igor smirnov](../assets/igor-small.jpg)
+
+👋 Data Science @Crayon
 
 # PizzaScript
 
@@ -57,7 +62,7 @@ Copyright (c) 2021 x-technology
 The `PizzaScript` goal is to take everyone equally
 
 ```ps
-5 + 5 * 10 // 100
+5 + 5 * 10 // = 100
 ```
 
 All operators should have same priority
@@ -181,7 +186,7 @@ Check the [AST Explorer](https://astexplorer.net/)
 ## Code Review
 
 - `Golang`
-- [`RxGo`](https://github.com/ReactiveX/RxGo) implementation of `ReactiveX` - a common pattern for asyncronous data flow, including collections, iterators, operators (filter, map, create, scan, ...)
+- [`RxGo`](https://github.com/ReactiveX/RxGo) implementation of `ReactiveX` - a common pattern for asyncronous data flow, including collections, iterators, operators
   - Unify API, data flow & interaction
   - [How to choose ReactiveX operator?](http://xgrommx.github.io/rx-book/content/which_operator_do_i_use/instance_operators.html)
 
@@ -207,7 +212,8 @@ Check the [AST Explorer](https://astexplorer.net/)
   - Filter meaningless symbols
   - Reduce & Map combine symbols into tokens
 
-How to filter with order?
+- Operators overview (filter, map, create, reduce, ...)
+- How to filter with order?
 
 ```go
 DistinctUntilChanged(func(_ context.Context, i interface{}) (interface{}, error) {
@@ -246,6 +252,10 @@ map:  11-00
 {INT 11-00}
 ```
 
+- Scan operator
+
+![rxgo scan](../assets/rxgo-scan.png)
+
 # Next Steps
 
 - Change all lists to reactive collections
@@ -280,8 +290,14 @@ map:  11-00
 
 - [Let’s Build A Simple Interpreter - Ruslan Spivak](https://ruslanspivak.com/lsbasi-part7/)
 
+- [Writing An Interpreter In Go - Thorsten Ball](https://interpreterbook.com/)
+
 ## Join us 27th of February, 2021
 
-- [🐦AlexKorzhikov](https://twitter.com/AlexKorzhikov), [korzio](https://github.com/korzio), 13 of February 2021
+- [🐦AlexKorzhikov](https://twitter.com/AlexKorzhikov), [korzio](https://github.com/korzio)
+
+- [Igor Smirnov](https://smithio.medium.com/)
+
+13 of February 2021
 
 Copyright (c) 2021 x-technology

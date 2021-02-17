@@ -1,7 +1,7 @@
 ## TODO
 
-- Add tests, configure github CI
 - Check TODOs
+- Add tests, configure github CI
 
 ## 0.0.2, 12-02-2021
 
