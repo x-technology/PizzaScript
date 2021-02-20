@@ -50,6 +50,25 @@ g2788 + h1679 == 3
 
 ## Syntax
 
+### Examples
+
+```ps
+fun factorial(n: int): int; {
+    if n = 0 then
+        factorial := 1
+    else
+        factorial := n * factorial(n - 1);
+}
+
+var
+    n: int;
+
+begin
+    for n := 0 to 16 do
+        writeln(n, '! = ', factorial(n));
+end.
+```
+
 ### Common
 
 Comments until end of line are declared with double slash `//` sign.
@@ -129,7 +148,7 @@ No parenthesis required inside `if-else` statement.
 
 ### Data Types
 
-That's simple, as `WebAssembly` supports 4 types - `i32, i64, f32, f64` we decided to support also `string`. At least, in the beginning. That should be enough for now. We [have plans](./todo json) to support `json` and [other types](./todo other types).
+That's simple, as `WebAssembly` supports 4 types - `i32, i64, f32, f64` we decided to support also `string`. In our case it's going to be `uint8_t, int16_t, float, and string`. At least, in the beginning. That should be enough for now. We [have plans](./todo json) to support `json` and [other types](./todo other types).
 
 Of course, we also need `undefined` type. To point out that a variable is not defined yet.
 
