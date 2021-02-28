@@ -41,6 +41,10 @@ h1679 + g2788 == "12"
 g2788 + h1679 == 3
 ```
 
+- Parentheses and curly braces are treated appropriately (meaning, they can be omitted in most cases)
+
+> You write your code, and let `PizzaScript` do the rest!
+
 ## Way of working
 
 - We follow the best programming techiques and standarts we want (know? can?)
@@ -53,20 +57,22 @@ g2788 + h1679 == 3
 ### Examples
 
 ```ps
-fun factorial(n: int): int; {
-    if n = 0 then
-        factorial := 1
-    else
-        factorial := n * factorial(n - 1);
+export "pizza/io/print"
+
+fun factorial(n: int): int {
+  // curly braces can be omitted if context has single meaning
+  if n = 0
+    1
+  else
+    n * factorial n - 1
+  // there is no need for return statement inside function body
 }
 
-var
-    n: int;
-
-begin
-    for n := 0 to 16 do
-        writeln(n, '! = ', factorial(n));
-end.
+for var n := 0; n <= 16; n++ {
+  print n, '! = ', factorial n
+  // you can choose to specify parentheses
+  // print(n, '! = ', factorial n)
+}
 ```
 
 ### Common
@@ -144,15 +150,17 @@ if 5 < 10 {
 }
 ```
 
-No parenthesis required inside `if-else` statement.
+No parentheses or curly braces are required inside the `if-else` statement.
 
 ### Data Types
 
-That's simple, as `WebAssembly` supports 4 types - `i32, i64, f32, f64` we decided to support also `string`. In our case it's going to be `uint8_t, int16_t, float, and string`. At least, in the beginning. That should be enough for now. We [have plans](./todo json) to support `json` and [other types](./todo other types).
+That's simple, as `WebAssembly` supports 4 types - `i32, i64, f32, f64` we decided to support also `string`. In our case all types are `int, float, and string` and type size is decided on compilation time. At least, in the beginning. That should be enough for now. We [have plans](./todo json) to support `json` and [other types](./todo other types).
 
 Of course, we also need `undefined` type. To point out that a variable is not defined yet.
 
 Variable types are leaded to the result type according to coercion priority table ...
+
+> #PizzaScript 🍕programming language appreciates your help, however can handle the thing itself
 
 ### Functions
 
@@ -171,6 +179,8 @@ A function definition can contain any number of arguments written inside parenth
 If arguments and function types are specified, that affects type coercion and affects the end result.
 
 > Function body is the result! (😲)
+
+If a function is called in a simple context, parenthesis can be omitted.
 
 ### Async Await
 
@@ -209,7 +219,27 @@ We start with the simplest and at the same time, key functionality.
 
 ## Next steps
 
-As soon as the first article gets 10 different people upvotes, we immediately start preparing a next release. Otherwise, we will stick with formal way of working.
+As soon as the first article gets 10 different people upvotes, we immediately start preparing a next release. Otherwise, we will stick with formal way of working. 
+
+## Tags
+
+- 100DaysOfCode
+- 100daysofcodechallenge
+- CodeNewbies
+- mentoring
+- developer
+- golang
+- ReactiveX
+- webdevelopment
+- OnlineEvents
+- OnlineSeminars
+- programming
+- development
+- introduction
+- algorithms
+- compiler
+- interpreter
+- programminglanguages
 
 ## TODO
 

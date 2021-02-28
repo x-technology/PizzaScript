@@ -20,3 +20,12 @@
 - lexer, parser
 - rxgo operators
 - webassembly
+
+# Feedback
+
+Please share your thoughts with us
+
+- [What should be PizzaScript next step?](https://forms.gle/Sde3qBpWarzUyqVn7) 
+- or even [become XTechnology Expert](https://forms.gle/8xc1j7cf8h3sEZ6W8) 👍
+
+Thanks! 
