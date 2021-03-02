@@ -33,3 +33,24 @@ func TestParser(t *testing.T) {
 		}
 	}
 }
+
+func TestNudOperators(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		{"+1", "{1,{+}}"},
+		{"+1+1", "{+,{1,{+}},{1}}"},
+	}
+
+	for _, tt := range tests {
+		l := lexer.New(tt.input)
+		p := New(l)
+		fmt.Println(tt.input)
+		actual := p.Print()
+
+		if actual != tt.expected {
+			t.Errorf("test failed for input %s, expected %s, actual %s", tt.input, tt.expected, actual)
+		}
+	}
+}

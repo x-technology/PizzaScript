@@ -45,8 +45,23 @@ func (p *Parser) parseIntegerLiteral(current *ast.Node) *ast.Node {
 	return current
 }
 
-func nud(next token.Token) ast.Node {
-	return ast.Node{Token: next}
+func nud(acc interface{}, next token.Token) interface{} {
+	// Node{Token: token.Token{Type: token.PLUS, Literal: "+"}, Left: &Node{Token: token.Token{Type: token.INT, Literal: "2"}}}
+	node := ast.Node{Token: next}
+
+	if acc != nil {
+		leftNode := acc.(ast.Node)
+		node.Left = &leftNode
+	}
+	
+	if next.Type == token.INT {
+		var it iterator
+		it.left = node
+
+		return it
+	}
+
+	return node
 }
 
 func led(left ast.Node, operator token.Token, right ast.Node) ast.Node {
@@ -91,9 +106,7 @@ func (p *Parser) Tree() ast.Node {
 
 			// if acc is not defined, save nud and continue
 			if !isIterator {
-				it.left = nud(next)
-
-				return it, nil
+				return nud(acc, next), nil
 			}
 
 			if it.operator != nil {
@@ -105,7 +118,7 @@ func (p *Parser) Tree() ast.Node {
 				if prevIt == nil || bp(it.operator) >= bp(prevIt.operator) {
 					var newIt iterator
 					// do one step ahead, same as :95
-					newIt.left = nud(next)
+					newIt.left = nud(nil, next).(iterator).left
 					newIt.stack = append(it.stack, it)
 
 					return newIt, nil
@@ -120,7 +133,7 @@ func (p *Parser) Tree() ast.Node {
 
 					// TODO dry
 					var newIt iterator
-					newIt.left = nud(next)
+					newIt.left = nud(nil, next).(iterator).left
 					newIt.stack = append(it.stack, it)
 
 					return newIt, nil
