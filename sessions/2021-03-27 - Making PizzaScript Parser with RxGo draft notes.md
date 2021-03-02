@@ -20,6 +20,9 @@
 Check your understanding
 
 - What is an interpreter?
+
+> An interpreter is a program that executes other programs
+
 - What is a compiler?
 - What’s the difference between an interpreter and a compiler?
 - What is a token?
@@ -34,6 +37,14 @@ https://ruslanspivak.com/lsbasi-part1/
 - What is the name of the part of the interpreter (compiler) that does parsing?
 
 https://ruslanspivak.com/lsbasi-part2/
+
+- todo Homogeneous AST :) vs Normalized Heterogeneous AST
+
+> Homogeneous AST, on page 109 is as simple as you can get. It uses a single object type to represent every node in the tree. Homoge- neous nodes also have to represent specific children by position within a list rather than with named node fields. We call that a normalized child list.
+
+> For example, we might want different node types for addition operator nodes and variable reference nodes. When building heterogeneous node types, it’s common practice to track children with fields rather than lists
+
+---
 
 Usually, compilers act more in an "imperative" way, by controlling processed text and position. With `RxGo` and `Observable` pattern this concept changes from top to bottom. And here is the challenge. Now, a stream of asynchronous events is the compiler's input and handlers have to deal with it. We saw how it happened with lexer before. Instead of saving and incrementing the current position while reading text, we operate on given text chunks. We had to save the aggregated object. todo code.
 
@@ -265,3 +276,5 @@ TODO https://dev.to/jrop/pratt-parsing
 - [How to choose operator?](http://xgrommx.github.io/rx-book/content/which_operator_do_i_use/instance_operators.html)
 
 TODO hand-written vs automatic parsers
+
+TODO check *ast.Node - * vs &

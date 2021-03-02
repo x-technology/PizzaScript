@@ -1,5 +1,6 @@
 ## TODO
 
+- Add Null-Denotation operators
 - Check TODOs
 - Add tests, configure github CI
 
