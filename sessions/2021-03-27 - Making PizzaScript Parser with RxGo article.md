@@ -2,14 +2,13 @@
 
 - [ ] Complete https://ruslanspivak.com/lsbasi-part3/
 
-- [ ] Schedule twit - Amazing reading about interpreters and compilers https://ruslanspivak.com/ @rspivak
-- [x] Schedule twit - Another tip from #PizzaScript 🍕project. Many resources mention compiler steps as streams. Reminding us about ReactiveX technology we've chosen.
-- [x] Schedule twit - #PizzaScript 🍕programming language appreciates your help, however can handle the thing itself.
+- [ ] Schedule twit - Amazing reading about interpreters and compilers https://ruslanspivak.com/lsbasi-part7/ @rspivak
+- [ ] Schedule twit - Another tip from #PizzaScript 🍕project. Many resources mention compiler steps as streams. Reminding us about ReactiveX technology we've chosen.
+- [ ] Schedule twit - #PizzaScript 🍕programming language appreciates your help, however can handle the thing itself.
 
 # Topic
 
 - Making PizzaScript Parser with RxGo
-- Pratt Parse Algorithm Explained with RxGo
 
 # Agenda
 
@@ -154,8 +153,6 @@ function expr(rbp = 0) {
 	return left
 }
 
-// Pratt Parsing - Jonathan Apodaca
-// https://dev.to/jrop/pratt-parsing
 ```
 
 current implementation

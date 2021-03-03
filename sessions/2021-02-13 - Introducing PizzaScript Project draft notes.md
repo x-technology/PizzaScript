@@ -403,3 +403,5 @@ TODO https://dev.to/jrop/pratt-parsing
 - [How to choose operator?](http://xgrommx.github.io/rx-book/content/which_operator_do_i_use/instance_operators.html)
 
 TODO hand-written vs automatic parsers
+
+TODO why this comment? // TODO change to reduce

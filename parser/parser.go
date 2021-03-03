@@ -117,7 +117,7 @@ func (p *Parser) Tree() ast.Node {
 
 				if prevIt != nil && bp(it.operator) < bp(prevIt.operator) {
 					// TODO dry, make linearize func, :148
-					for len(it.stack) > 0 && bp(it.operator) < bp(prevIt.operator) {
+					for len(it.stack) > 0 && prevIt != nil && bp(it.operator) < bp(prevIt.operator) {
 						prevIt = &it.stack[len(it.stack)-1]
 
 						it.left = led(prevIt.left, *prevIt.operator, it.left)
@@ -130,10 +130,9 @@ func (p *Parser) Tree() ast.Node {
 				newIt.stack = append(it.stack, it)
 
 				return newIt, nil
-			} else {
-				it.operator = &next
-			}
+			} 
 
+			it.operator = &next
 			return it, nil
 		})
 
