@@ -115,29 +115,21 @@ func (p *Parser) Tree() ast.Node {
 					prevIt = &it.stack[len(it.stack)-1]
 				}
 
-				if prevIt == nil || bp(it.operator) >= bp(prevIt.operator) {
-					var newIt iterator
-					// do one step ahead, same as :95
-					newIt.left = nud(nil, next).(iterator).left
-					newIt.stack = append(it.stack, it)
-
-					return newIt, nil
-				} else {
-					// TODO dry, make linearize func, :133
+				if prevIt != nil && bp(it.operator) < bp(prevIt.operator) {
+					// TODO dry, make linearize func, :148
 					for len(it.stack) > 0 && bp(it.operator) < bp(prevIt.operator) {
 						prevIt = &it.stack[len(it.stack)-1]
 
 						it.left = led(prevIt.left, *prevIt.operator, it.left)
 						it.stack = it.stack[:len(it.stack)-1]
 					}
-
-					// TODO dry
-					var newIt iterator
-					newIt.left = nud(nil, next).(iterator).left
-					newIt.stack = append(it.stack, it)
-
-					return newIt, nil
 				}
+
+				var newIt iterator
+				newIt.left = nud(nil, next).(iterator).left
+				newIt.stack = append(it.stack, it)
+
+				return newIt, nil
 			} else {
 				it.operator = &next
 			}
