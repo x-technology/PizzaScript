@@ -283,3 +283,7 @@ TODO hand-written vs automatic parsers
 TODO check *ast.Node - * vs &
 
 TODO why this comment? // TODO change to reduce
+
+TODO // would stack grow in dimensions?
+
+TODO func nud(acc interface{}, next token.Token) interface{} {  // wtf return different types, really????

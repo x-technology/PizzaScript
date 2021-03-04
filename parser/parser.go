@@ -17,7 +17,7 @@ type (
 // > A parser is a software component that takes input data (frequently text) and builds a data structure – often some kind of parse tree, abstract syntax tree or other hierarchical structure, giving a structural representation of the input while checking for correct syntax (c) Wikipedia
 type Parser struct {
 	lexer          *lexer.Lexer
-	tree           ast.Node
+	tree           *ast.Node
 	prefixParseFns map[token.TokenType]prefixParseFn
 	infixParseFns  map[token.TokenType]infixParseFn
 }
@@ -45,27 +45,30 @@ func (p *Parser) parseIntegerLiteral(current *ast.Node) *ast.Node {
 	return current
 }
 
+// TODO return iterator, differ in flags
 func nud(acc interface{}, next token.Token) interface{} {
 	// Node{Token: token.Token{Type: token.PLUS, Literal: "+"}, Left: &Node{Token: token.Token{Type: token.INT, Literal: "2"}}}
 	node := ast.Node{Token: next}
+	it := iterator{nud: &node}
+	accIt, isIt := acc.(iterator)
 
-	if acc != nil {
-		leftNode := acc.(ast.Node)
-		node.Left = &leftNode
+	if isIt {
+		// { , {... }
+		node.Left = accIt.nud
+	}
+
+	// end
+	if next.Type == token.INT {
+		it.left = &node
+		it.stack = accIt.stack
+		it.nud = nil
 	}
 	
-	if next.Type == token.INT {
-		var it iterator
-		it.left = node
-
-		return it
-	}
-
-	return node
+	return it
 }
 
-func led(left ast.Node, operator token.Token, right ast.Node) ast.Node {
-	return ast.Node{Left: &left, Token: operator, Right: &right}
+func led(left ast.Node, operator token.Token, right ast.Node) *ast.Node {
+	return &ast.Node{Left: &left, Token: operator, Right: &right}
 }
 
 const (
@@ -88,29 +91,32 @@ var precendences = map[string]int{
 }
 
 type iterator struct {
-	left     ast.Node
+	left     *ast.Node
+	nud    	 *ast.Node
 	operator *token.Token
 	stack    []iterator
 }
 
-func (p *Parser) Tree() ast.Node {
+func (p *Parser) Tree() *ast.Node {
 	tree := p.lexer.Tokens().
 		// 1 + 2     -> {1, +, 2}
 		// 1 * 2 + 3 -> {{1, *, 2}, + , 3}
 		// 1 + 2 * 3 -> {1, +, {2, *, 3}}
 		// TODO change to reduce
 		// TODO move to separate func
+		// TODO make a stack interface
 		Scan(func(_ context.Context, acc interface{}, elem interface{}) (interface{}, error) {
 			it, isIterator := acc.(iterator)
 			next := elem.(token.Token)
 
 			// if acc is not defined, save nud and continue
-			if !isIterator {
+			if !isIterator || it.left == nil {
 				return nud(acc, next), nil
 			}
 
 			if it.operator != nil {
 				var prevIt *iterator
+				// would stack grow in other dimensions?
 				if len(it.stack) > 0 {
 					prevIt = &it.stack[len(it.stack)-1]
 				}
@@ -118,15 +124,15 @@ func (p *Parser) Tree() ast.Node {
 				for len(it.stack) > 0 && prevIt != nil && bp(it.operator) < bp(prevIt.operator) {
 					prevIt = &it.stack[len(it.stack)-1]
 
-					it.left = led(prevIt.left, *prevIt.operator, it.left)
+					it.left = led(*prevIt.left, *prevIt.operator, *it.left)
 					it.stack = it.stack[:len(it.stack)-1]
 				}
 
 				var newIt iterator
-				newIt.left = nud(nil, next).(iterator).left
+				// newIt.left = nud(nil, next).(iterator).left
 				newIt.stack = append(it.stack, it)
 
-				return newIt, nil
+				return nud(newIt, next), nil
 			} 
 
 			it.operator = &next
@@ -140,7 +146,7 @@ func (p *Parser) Tree() ast.Node {
 	for len(it.stack) > 0 {
 		prevIt = &it.stack[len(it.stack)-1]
 
-		it.left = led(prevIt.left, *prevIt.operator, it.left)
+		it.left = led(*prevIt.left, *prevIt.operator, *it.left)
 		it.stack = it.stack[:len(it.stack)-1]
 	}
 

@@ -20,7 +20,7 @@ func New(parser *parser.Parser) *Evaluator {
 
 func (e *Evaluator) Eval() int64 {
 	lastItem := e.parser.Tree()
-	value := eval(&lastItem)
+	value := eval(lastItem)
 
 	return value
 }
