@@ -55,18 +55,17 @@ func nud(acc interface{}, next token.Token) interface{} {
 	if isIt {
 		// { , {... }
 		node.Left = accIt.nud
+		it.stack = accIt.stack
 	}
 
 	// end
 	if next.Type == token.INT {
 		it.left = &node
-		it.stack = accIt.stack
 		it.nud = nil
 	}
 	
 	return it
 }
-
 func led(left ast.Node, operator token.Token, right ast.Node) *ast.Node {
 	return &ast.Node{Left: &left, Token: operator, Right: &right}
 }

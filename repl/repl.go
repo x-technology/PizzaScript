@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"pizzascript/eval"
 	"pizzascript/lexer"
 	"pizzascript/parser"
 )
@@ -26,8 +25,10 @@ func Start(in io.Reader, out io.Writer) {
 		l := lexer.New(line)
 
 		p := parser.New(l)
-		e := eval.New(p)
+		fmt.Println(p.Print())
 
-		fmt.Println(e.Eval())
+		// e := eval.New(p)
+
+		// fmt.Println(e.Eval())
 	}
 }
