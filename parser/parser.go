@@ -48,7 +48,7 @@ func (p *Parser) parseIntegerLiteral(current *ast.Node) *ast.Node {
 // TODO return iterator, differ in flags
 func nud(acc interface{}, next token.Token) interface{} {
 	// Node{Token: token.Token{Type: token.PLUS, Literal: "+"}, Left: &Node{Token: token.Token{Type: token.INT, Literal: "2"}}}
-	node := ast.Node{Token: next}
+	node := ast.Node{Token: &next}
 	it := iterator{nud: &node}
 	accIt, isIt := acc.(iterator)
 
@@ -67,7 +67,7 @@ func nud(acc interface{}, next token.Token) interface{} {
 	return it
 }
 func led(left ast.Node, operator token.Token, right ast.Node) *ast.Node {
-	return &ast.Node{Left: &left, Token: operator, Right: &right}
+	return &ast.Node{Left: &left, Token: &operator, Right: &right}
 }
 
 const (

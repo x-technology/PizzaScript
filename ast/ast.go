@@ -5,7 +5,7 @@ import (
 )
 
 type Node struct {
-	Token token.Token
+	Token *token.Token
 	Left  *Node
 	Right *Node
 }
