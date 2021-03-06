@@ -25,8 +25,26 @@ func (e *Evaluator) Eval() int64 {
 	return value
 }
 
+func isNud(node *ast.Node) bool {
+	return node.Left != nil && node.Token != nil && node.Right == nil
+}
+
 func eval(node *ast.Node) int64 {
 	value := node.Token.Literal
+
+	if isNud(node) {
+		right := evalIntegerLiteral(value)
+		
+		for node != nil && node.Left != nil {
+			operator := node.Left.Token.Literal
+			right = evalIntegerInfixExpression(operator, 0, right)
+
+			node = node.Left
+		}
+
+		return right
+	}
+
 	if node.Left == nil && node.Right == nil {
 		return evalIntegerLiteral(value)
 	}
@@ -35,6 +53,21 @@ func eval(node *ast.Node) int64 {
 	right := eval(node.Right)
 
 	return evalIntegerInfixExpression(value, left, right)
+}
+
+func evalIntegerPrefixExpression(
+	operator string,
+	left int64,
+) int64 {
+	switch operator {
+	case "+":
+		return left
+	case "-":
+		return -left
+	default:
+		log.Err("unknown operator", left, operator)
+		return 0
+	}
 }
 
 func evalIntegerInfixExpression(

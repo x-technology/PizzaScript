@@ -36,3 +36,36 @@ func TestParser(t *testing.T) {
 		}
 	}
 }
+
+func TestNudEval(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected int64
+	}{
+		{"+1", 1},
+		{"+++1", 1},
+		{"+-+1", -1},
+		{"+++++1", 1},
+		{"+++-+1", -1},
+		{"+---+1", -1},
+		{"-1", -1},
+		{"--1", 1},
+		{"+1+1", 2},
+		{"+1++1", 2},
+		{"+1++++++1", 2},
+		{"+1+-+-+-1", 0},
+	}
+
+	for _, tt := range tests {
+		l := lexer.New(tt.input)
+		p := parser.New(l)
+		e := New(p)
+
+		fmt.Println(tt.input)
+		actual := e.Eval()
+
+		if actual != tt.expected {
+			t.Errorf("test failed for input %s, expected %d, actual %d", tt.input, tt.expected, actual)
+		}
+	}
+}
