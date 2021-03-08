@@ -11,8 +11,8 @@ func TestToString(t *testing.T) {
 		input    Node
 		expected string
 	}{
-		{Node{Token: token.Token{Type: token.INT, Literal: "1"}}, "{1}"},
-		{Node{Token: token.Token{Type: token.PLUS, Literal: "+"}, Left: &Node{Token: token.Token{Type: token.INT, Literal: "2"}}}, "{+,{2}}"},
+		{Node{Token: &token.Token{Type: token.INT, Literal: "1"}}, "{1}"},
+		{Node{Token: &token.Token{Type: token.PLUS, Literal: "+"}, Left: &Node{Token: &token.Token{Type: token.INT, Literal: "2"}}}, "{+,{2}}"},
 	}
 
 	for _, tt := range tests {
