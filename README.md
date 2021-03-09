@@ -1,6 +1,8 @@
-# PizzaScript 
+# PizzaScript 🍕
 
 > Programming language that fucks up (c)
+
+![PizzaScript](./assets/pizzascript.jpg)
 
 ## Educational Programming Open Source Project
 

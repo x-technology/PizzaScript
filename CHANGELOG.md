@@ -1,8 +1,14 @@
 ## TODO
 
+- Use of parenthesis
+- Refactor TODOs
+
+## 0.0.3, 09-03-2021
+
 - Add Null-Denotation operators
-- Check TODOs
-- Add tests, configure github CI
+- Fix TODOs
+- Add tests
+- Configure github CI
 
 ## 0.0.2, 12-02-2021
 
