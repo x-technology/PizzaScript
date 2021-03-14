@@ -174,13 +174,35 @@ fun sum(var a1573: string, b7232): int {
 sum(1, 2) // 12
 ```
 
-A function definition can contain any number of arguments written inside parenthesis, separated by comma.
+A function definition can contain any number of arguments written inside parentheses, separated by comma.
+
+To be fair, parentheses are not needed between function name and body. Here is an example of a top-down parser implementation functions
+
+```ps
+// <expr> ::= <operand> (("+" | "-" | "*" | "/") <operand>)*
+fun expr {
+  // remember, in pizzascript parenthesis can be omitted in most cases
+  operand
+
+  while operator
+    operand
+}
+
+fun operator {
+  // take next token from input
+  next == "+" || next == "-" || next == "*" || next == "/"
+}
+
+fun next {
+  input[i + 1]
+}
+```
 
 If arguments and function types are specified, that affects type coercion and affects the end result.
 
 > Function body is the result! (😲)
 
-If a function is called in a simple context, parenthesis can be omitted.
+If a function is called in a simple context, parentheses can be omitted.
 
 ### Async Await
 
