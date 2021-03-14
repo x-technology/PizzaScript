@@ -1,12 +1,13 @@
 ## TODO
 
-- Use of parenthesis
-- Refactor TODOs
+- Extend with variables
+- Port to WebAssembly
+- Refactor or create issues from TODOs
 
 ## 0.0.3, 09-03-2021
 
 - Add Null-Denotation operators
-- Fix TODOs
+- Check TODOs
 - Add tests
 - Configure github CI
 
