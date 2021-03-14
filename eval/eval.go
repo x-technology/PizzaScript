@@ -33,6 +33,7 @@ func eval(node *ast.Node) int64 {
 	value := node.Token.Literal
 
 	if isNud(node) {
+		// TODO change AST representation of a Prefix nodes to be equal to Infix nodes
 		right := evalIntegerLiteral(value)
 		
 		for node != nil && node.Left != nil {

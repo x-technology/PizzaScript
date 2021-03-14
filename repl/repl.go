@@ -6,6 +6,7 @@ import (
 	"io"
 	"pizzascript/lexer"
 	"pizzascript/parser"
+	"pizzascript/eval"
 )
 
 const PROMPT = "\n>> "
@@ -25,10 +26,10 @@ func Start(in io.Reader, out io.Writer) {
 		l := lexer.New(line)
 
 		p := parser.New(l)
-		fmt.Println(p.Print())
+		// fmt.Println(p.Print())
 
-		// e := eval.New(p)
+		e := eval.New(p)
 
-		// fmt.Println(e.Eval())
+		fmt.Println(e.Eval())
 	}
 }

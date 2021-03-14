@@ -24,7 +24,3 @@ func (n *Node) ToString() string {
 	res += "}"
 	return res
 }
-
-type Tree struct {
-	root Node
-}
