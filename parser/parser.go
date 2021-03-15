@@ -45,8 +45,7 @@ func (p *Parser) parseIntegerLiteral(current *ast.Node) *ast.Node {
 	return current
 }
 
-// TODO return iterator, differ in flags
-func nud(acc interface{}, next token.Token) interface{} {
+func nud(acc interface{}, next token.Token) iterator {
 	// Node{Token: token.Token{Type: token.PLUS, Literal: "+"}, Left: &Node{Token: token.Token{Type: token.INT, Literal: "2"}}}
 	node := ast.Node{Token: &next}
 	it := iterator{nud: &node}
@@ -66,16 +65,20 @@ func nud(acc interface{}, next token.Token) interface{} {
 	
 	return it
 }
+
 func led(left ast.Node, operator token.Token, right ast.Node) *ast.Node {
 	return &ast.Node{Left: &left, Token: &operator, Right: &right}
 }
 
+// iota enumerator gives an effective way in go language
+// to use constants in enum-like constructs
 const (
 	none = iota
 	plus
 	mul
 )
 
+// calculate binding power
 func bp(tok *token.Token) int {
 	if precendence, ok := precendences[string(tok.Type)]; ok {
 		return precendence
@@ -84,6 +87,7 @@ func bp(tok *token.Token) int {
 	return none
 }
 
+// enum-like map of operator token keys and iota values defined above
 var precendences = map[string]int{
 	token.PLUS:     plus,
 	token.ASTERISK: mul,
@@ -115,7 +119,8 @@ func (p *Parser) Tree() *ast.Node {
 
 			if it.operator != nil {
 				var prevIt *iterator
-				// would stack grow in other dimensions?
+				// TODO check if stack will grow in other dimensions and if that's a bug
+				// try multiple binding power operators
 				if len(it.stack) > 0 {
 					prevIt = &it.stack[len(it.stack)-1]
 				}
@@ -128,7 +133,6 @@ func (p *Parser) Tree() *ast.Node {
 				}
 
 				var newIt iterator
-				// newIt.left = nud(nil, next).(iterator).left
 				newIt.stack = append(it.stack, it)
 
 				return nud(newIt, next), nil

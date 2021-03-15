@@ -16,6 +16,8 @@ All articles in this series
 
 Today, we are going to focus on programming language parsers, overview and practice with a calculator use case. We implement *Pratt's top down operator precedence* algorithm in Go using RxGo library.
 
+> !Be careful, we use `PizzaScript` code to explain the problem and show `Go` implementation in the end!
+
 ---
 
 We already discussed the nature of programming languages and compilers. 
@@ -66,7 +68,11 @@ Feel free to type in commands
 
 > Now, how are we going to transform lexems into an the AST?
 
-Good question! A nice thing about BNF grammars (language representations), as [we mentioned last time](https://korzio.medium.com/writing-pizzascript-lexer-with-rxgo-a-saga-in-iii-slices-3790dc6099e7) is that rules can be transformed into a parsing algorithm. Especially when this notation is following a special "context-free" principle. It is a kind of grammar's limitation in which the left part of a rule can contain only non-terminal tokens, the right part can contain both non-terminal and terminal ones. With that in mind, a BNF can be converted into a working program by applying the following steps
+Good question! A nice thing about BNF grammars (language representations), as [we mentioned last time](https://korzio.medium.com/writing-pizzascript-lexer-with-rxgo-a-saga-in-iii-slices-3790dc6099e7) is that rules can be transformed into a parsing algorithm. Especially when this notation is following a special "context-free" principle. It is a kind of grammar's limitation in which the left part of a rule can contain only non-terminal tokens, the right part can contain both non-terminal and terminal ones. 
+
+> Non-terminal basically means they still can be transformed to something, while terminals are final states.
+
+With that in mind, a BNF can be converted into a working program by applying the following steps
 - the left side of a BNF rule is going to be a function declaration, defined for each non-terminal token, 
 - the right side is the function body, consequentially calling functions and checking for terminal ones,
 - quantifiers `(*, +)` and other syntax is translated into control flow constructions like `while, for, if` and so on.
@@ -95,7 +101,7 @@ This way of constructing a parser is known a recursive descent top down techniqu
 
 > The alternative are bottom-up parsers, which are out of scope for this article. 😄 Luckily, we skip language and parser categories, too 😅
 
-It's straightforward, clean and nice. It has a disadvantage though - you have to implement each combination of operators, operands and expressions separately. As you can imagine, as `pizzascript` grammar grows, that would be a hell amount of work to maintain. There is where Pratt parser comes into place. It encapsulates the parser's logic into a simple shape.
+It's straightforward, clean and nice. It has a disadvantage though - you have to implement each combination of operators, operands and expressions separately. As you can imagine, as `pizzascript` grammar grows, that would be a hell amount of work to maintain. There is where [**Vaughan Pratt** parsing algorithm](https://tdop.github.io/) (so-called *Top Down Operator Precedence* algorithm) comes into place. It encapsulates the parser's logic into a simple shape.
 
 ```ps
 // rbp - right binding power
@@ -127,7 +133,25 @@ fun led(left, operator) {
 
 The one not explained yet function is `bp` - binding power. It is a key for Pratt algorithm as it solves another important problem of which token has more priority. Say, `*` has more priority than `+`. 
 
-> There is a proposal in `PizzaScript` to treat every expression with the same priority 😀
+The canonical example `1 + 2 * 3` should result in a tree like 
+
+```bash
+  +
+ / \
+1   *
+   / \
+  2   3
+
+// and not
+
+    *
+   / \
+  +   3
+ / \
+1   2
+```
+
+> In fact, there is a proposal in `PizzaScript` to treat every expression with the same priority 😀(1+2*3 == 9)
 
 ```ps
 fun bp(operator) {
@@ -135,11 +159,57 @@ fun bp(operator) {
 }
 ```
 
+![operator precedence levels](/assets/tdop-expr-bp.png)
+
 > We recommend to go through [Pratt Parsing by Jonathan Apodaca](https://dev.to/jrop/pratt-parsing) - a concise, practical, and very informative article about it.
+
+Let's recap the Pratt algorithm:
+- each operator has a precedence, or binding power
+- tokens are recognised differently in null or left position (nud or led)
+- recursive parse expressions function consumes tokens from left to right, until it reaches an operator of precedence less than or equal to the previous operator
+
+## Implementation details & Problems
+
+Let's start with simple ones. Binding power definition and calculation in *Go* looks like
+
+```go
+// iota enumerator gives an effective way in go language
+// to use constants in enum-like constructs
+const (
+	none = iota
+	plus
+	mul
+)
+
+// enum-like map of operator token keys and iota values defined above
+var precendences = map[string]int{
+	token.PLUS:     plus,
+	token.ASTERISK: mul,
+}
+
+// calculate binding power
+func bp(tok *token.Token) int {
+	if precendence, ok := precendences[string(tok.Type)]; ok {
+		return precendence
+	}
+
+	return none
+}
+```
+
+The `led` function does nothing more
+
+```go
+func led(left ast.Node, operator token.Token, right ast.Node) *ast.Node {
+	return &ast.Node{Left: &left, Token: &operator, Right: &right}
+}
+```
+
+We will left the `nud` implementation for later as it is has more sense with the main parse expression finctionality.
 
 ## Node type
 
-Next, no matter how we proceed with our interpreter, we will have a intermediate representation (IR is a commong term for language parsing programs). Parser takes input stream of tokens and build an hieararchical structure representing the original program - the abstract syntax tree (AST). 
+No matter how we proceed with our compiler further, we will have an intermediate representation (*IR*) of a processed text. Parser takes an input stream of tokens and builds an hieararchical data structure mirroring the original program - the abstract syntax tree (AST). 
 
 > There is also a general notion of a parse tree. Let's take it as a tree of algorithm decisions made to parse an input. Whereas AST is a final representation of a program. It's really complex matter we are going through and we need to carefully stop before falling into the abyss. 
 
@@ -172,250 +242,93 @@ As one can see, *Node* is a potentially recursive structure. Although we stated 
 
 > And we will explore it in future chapters 🤫
 
-## Implementation & Problems
+## The main parse expression
 
----
+And here is the challenge. 
 
-Usually, compilers act more in an "imperative" way, by controlling processed text and position. With `RxGo` and `Observable` pattern this concept changes from top to bottom. And here is the challenge. Now, a stream of asynchronous events is the compiler's input and handlers have to deal with it. We saw how it happened with lexer before. Instead of saving and incrementing the current position while reading text, we operate on given text chunks. We had to save the aggregated object. todo code.
+Usually, compilers act more in an "imperative" way, by controlling processed text and position. With `RxGo` and `Observable` pattern this concept changes from top to bottom. Now, a stream of asynchronous events is the compiler's input and handlers have to deal with it. We saw how it happened with the lexer before. Instead of saving and incrementing the current position while reading text, we operate on asyncronously given text chunks. 
 
-    We need to support:
-    - operator precedence
+Last time, we used [the `RxGo Scan` operator](https://github.com/ReactiveX/RxGo/blob/master/doc/scan.md)
 
-    > operator precedence. An alternative term for this is order of operations, which should make clearer what operator precedence describes: which priority do different operators have. The canonical example is this one, which we saw earlier
-    > 5 + 5 * 10
+![rxgo scan](../assets/rxgo-scan.png)
 
-    - infix and prefix expressions
+It allows us to use the `look-ahead` technique - to keep previous iteration value and produce a required one based on the previos value. Again, we introduce an intermediate iterator type to make a decision on produced values.
 
-    > Pratt parsing works by scanning the input tokens, and classifying them into two categories:
-    - no left-context (null denotation / prefix)
-    - left-to-right (infix)
+To implement the recursive nature of the original algorithm, we had to use one another trick and save the aggregated stack. We call it 
 
-    compare with wikipedia c implemenation 
-
-    write in a pseudocode
-
-    ```go
-    // 1 + 2 * 3
-    // -> {1, +, {2, *, 3}}
-    // 
-    // 1 * 2 + 3
-    // -> {{1, *, 2}, + , 3}
-    func (p *Parser) parseExpression(precedence int) ast.Expression {
-      // first precedence LOWEST
-      // second precedence SUM
-      prefix := p.prefixParseFns[p.curToken.Type]
-      // first parseIntegerLiteral 1
-      // second parseIntegerLiteral 2
-      if prefix == nil {
-        p.noPrefixParseFnError(p.curToken.Type)
-        return nil
-      }
-      leftExp := prefix()
-
-      // second precedence SUM, SUM > LOWEST
-      for !p.peekTokenIs(token.SEMICOLON) && precedence < p.peekPrecedence() {
-        infix := p.infixParseFns[p.peekToken.Type]
-        // parseInfixExpression +
-        if infix == nil {
-          return leftExp
-        }
-
-        p.nextToken()
-
-        leftExp = infix(leftExp)
-      }
-
-      return leftExp
-    }
-    ```
-
-    so it's a set of lookahead functions,
-
-    ```go
-    func (p *Parser) parsePrefixExpression() ast.Expression {
-      expression := &ast.PrefixExpression{
-        Token:    p.curToken,
-        Operator: p.curToken.Literal,
-      }
-
-      p.nextToken()
-
-      expression.Right = p.parseExpression(PREFIX)
-
-      return expression
-    }
-    ```
-
-    we need to find appropriate reactive implementations for them. probably there will be same scan with additional structures. And actually it looks like a good idea to addd intermediate observables inside temporary tokens
-
-    the task requires recursion
-    actually, let's do the recursion with state
-    we'll push every valid item, and pop when it is over
-
-    write in pseudocode
-
-    CALCULATOR
-
-    first step
-
-```js
-function expr() {
-    let left = nud(next())
-    while (!eof)
-        left = led(left, next())
-    return left
-}
-
-// LED(left, operator) = Tree(left, operator, right=next())
-```
-
-```
-// todo change to expr(bp(operator))
-right := nud(next)
-it.left = led(it.left, *it.operator, right)
-```
-
-that just eats everything from left to right
-
-second step
-
-```js
-function expr(rbp = 0) {
-	let left = nud(next())
-	while (bp(peek()) > rbp)
-    left = led(left, next())
-    // LED(left, operator) = Tree(left, operator, right=expr(bp(operator)))
-	return left
-}
-
-```
-
-current implementation
+> The pyramid of doom
 
 ```go
-accToken, isAccToken := acc.(interToken)
-currentToken := elem.(token.Token)
+tree := p.lexer.Tokens().
+  Scan(func(_ context.Context, acc interface{}, elem interface{}) (interface{}, error) {
+    it, isIterator := acc.(iterator)
+    next := elem.(token.Token)
 
-// if acc is not defined, save current state and continue
-if !isAccToken {
-  accNode := &ast.Node{Token: currentToken}
-  accToken.states = append(accToken.states, accNode)
+    if !isIterator || it.left == nil {
+      // null denotation
+      return nud(acc, next), nil
+    }
 
-  return accToken, nil
-}
+    if it.operator != nil {
+      var prevIt *iterator
+      if len(it.stack) > 0 {
+        prevIt = &it.stack[len(it.stack)-1]
+      }
 
-// if acc is prefixExpression of a first item in state
-currentState := accToken.states[len(accToken.states)-1]
-accToken.states = accToken.states[:len(accToken.states)-1]
+      // binding power comparison
+      for len(it.stack) > 0 && prevIt != nil && bp(it.operator) < bp(prevIt.operator) {
+        prevIt = &it.stack[len(it.stack)-1]
 
-prefix := p.prefixParseFns[currentState.Token.Type]
-if prefix == nil {
-  log.Err("No prefix parse function found for token", currentState.Token.Type)
-  return nil, nil
-}
+        // left denotation
+        it.left = led(*prevIt.left, *prevIt.operator, *it.left)
+        it.stack = it.stack[:len(it.stack)-1]
+      }
 
-newState := prefix(currentState)
-newState.Token = currentToken
-// save states back
-accToken.states = append(accToken.states, newState)
+      var newIt iterator
+      newIt.stack = append(it.stack, it)
 
-return accToken, nil
+      return nud(newIt, next), nil
+    } 
 
-// func (p *Parser) parseExpression(precedence int) ast.Node {
-// 	prefix := p.prefixParseFns[p.curToken.Type]
-// 	if prefix == nil {
-// 		p.noPrefixParseFnError(p.curToken.Type)
-// 		return nil
-// 	}
-// 	leftExp := prefix()
-// 	for !p.peekTokenIs(token.SEMICOLON) && precedence < p.peekPrecedence() {
-// 		infix := p.infixParseFns[p.peekToken.Type]
-// 		if infix == nil {
-// 			return leftExp
-// 		}
-
-// 		p.nextToken()
-
-// 		leftExp = infix(leftExp)
-// 	}
-
-// 	return leftExp
-// }
-
-// .Map(func(_ context.Context, i interface{}) (interface{}, error) {
-// 	log.Debug("parser", i)
-// 	tok := i.(token.Token)
-// 	prefix := p.prefixParseFns[tok.Type]
-// 	if prefix == nil {
-// 		log.Info("Could not find prefix for token", tok)
-// 		return nil, nil
-// 	}
-// 	leftExp := prefix()
-// 	return leftExp, nil
-// })
+    it.operator = &next
+    return it, nil
+  })
 ```
 
-- ReactiveX, rxgo
-  - Benefits of using streams
-    - standard operators, 
-    - iterators, 
-    - flows,
-    - asyncronous,
-    - immutable
-  - Operators Overview - filter, map, create, scan
+Instead of imperatively taking the next token from stream, it saves current iterator state. For recursion analogue it uses an iterator's stack.
 
-  > Does Scala have ReactiveX analogue?
+In the future we want to refactor this function, and use [the `Reduce` operator](https://github.com/ReactiveX/RxGo/blob/master/doc/reduce.md) instead.
 
-- Code Review (20 minutes)
-  - Oh, btw logger
-  - Explain language techniques
+![rxgo scan](/assets/rxgo-reduce.png)
 
-- CHANGELOG
-
-# TODO
-
-- http://rigaux.org/language-study/syntax-across-languages/Mthmt.html
-
-- change all lists to reactive collections?
-
-- why to use observables?
-
-- check syntax
+And the last one - the promised `nud` function
 
 ```go
-// type conversion
-i.V.(string)
+func nud(acc interface{}, next token.Token) iterator {
+	// Node{Token: token.Token{Type: token.PLUS, Literal: "+"}, Left: &Node{Token: token.Token{Type: token.INT, Literal: "2"}}}
+	node := ast.Node{Token: &next}
+	it := iterator{nud: &node}
+	accIt, isIt := acc.(iterator)
+
+	if isIt {
+		// { , {... }
+		node.Left = accIt.nud
+		it.stack = accIt.stack
+	}
+
+	// end
+	if next.Type == token.INT {
+		it.left = &node
+		it.nud = nil
+	}
+	
+	return it
+}
 ```
 
-- check concept channels, goroutine
+It copies stack to maintain the main function's recursion.
+Also, it can recognise when to stop denotation. Currently, it's a `token.Type` attribute, which should be equal to `INT`. 
 
-# Feedback
-
-- Where do we go from here?
-  - WebAssembly - try a compile target, explain WebAssembly basics
-  - Programming languages - extending PizzaScript and the interpreter
-  - More on Golang? 
-  - More on ReactiveX operators?
+Luckily, that concludes our second step of parsing expressions.
 
 # Summary
-
-- Use appropiate tools
-- First implement draft algorithm, than polish
-
-- Learn lots of Go specifics
-- Learn Rx operators
-- Program
-
-## Links
-
-- [How to choose operator?](http://xgrommx.github.io/rx-book/content/which_operator_do_i_use/instance_operators.html)
-
-TODO hand-written vs automatic parsers
-
-TODO check *ast.Node - * vs &
-
-TODO why this comment? // TODO change to reduce
-
-- [ ] Complete https://ruslanspivak.com/lsbasi-part3/
-
-TODO twit about all links
