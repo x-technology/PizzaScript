@@ -275,10 +275,6 @@ As soon as the first article gets 10 different people upvotes, we immediately st
 - [`8` Cool introduction to PL grammars](http://www.mollypages.org/page/grammar/index.mp)
 
 - Use existing language??
-- Pratt parser
-- regular activities - twitter start in January
-
-- Запланировать твит о книге и купить го интерпретатор книгу - as promotion to first session
 
 twit as group messages about the book
 - twit "book gives an impression on how languages work, especially like javascript and go - builtin functions, environments, etc"
@@ -294,8 +290,6 @@ twit as group messages about the book
 - decompose projects into 2 hours sessions
 
 - https://interpreterbook.com/
-
-./assets/Writing An Interpreter In Go by Thorsten Ball (z-lib.org).pdf
 
 - > Unlike other JVM languages, it's not that straightforward to create simple “Hello, World!” program in Clojure.
 
@@ -323,8 +317,6 @@ Should be something amazing!
 - [Emerging Programming Languages](https://www.oreilly.com/library/view/emerging-programming-languages/9781492082590/)
 - [Top Down Operator Precedence - Vaughan Pratt](...)
 - [Pratt Parsers: Expression Parsing Made Easy by Bob Nystrom](http://journal.stuffwithstuff.com/2011/03/19/pratt-parsers-expression-parsing-made-easy/)
-
-TODO links
 
 Rob Pike - Lexical Scanning in Go - https://www.youtube.com/watch?v=HxaD_trXwRE
 

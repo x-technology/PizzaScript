@@ -1,8 +1,7 @@
 # TODO
 
-- [ ] Complete https://ruslanspivak.com/lsbasi-part3/
-
-- [ ] Schedule twit - Amazing reading about interpreters and compilers https://ruslanspivak.com/ @rspivak
+- [x] Complete https://ruslanspivak.com/lsbasi-part3/
+- [x] Schedule twit - Amazing reading about interpreters and compilers https://ruslanspivak.com/ @rspivak
 - [x] Schedule twit - Another tip from #PizzaScript 🍕project. Many resources mention compiler steps as streams. Reminding us about ReactiveX technology we've chosen.
 - [x] Schedule twit - #PizzaScript 🍕programming language appreciates your help, however can handle the thing itself.
 
@@ -166,7 +165,6 @@ function expr(rbp = 0) {
           ┌────┐
           │ q0 │
           └─╥──┘
-            ║
             ║  c ← nud;
             ║  advance;
             ║  left ← run c
@@ -174,7 +172,6 @@ function expr(rbp = 0) {
          ┌──╨─┐
     ╔═▶▶═╡ q1 │
     ║    └──╥─┘
-    ║       ║
     ║       ║  rbp < lpb/
     ║       ║  c ← led;
     ║       ║  advance;
@@ -312,6 +309,8 @@ TODO // would stack grow in dimensions?
 
 TODO func nud(acc interface{}, next token.Token) interface{} {  // wtf return different types, really????
 
-TODO https://github.com/x-technology/PizzaScript/actions/runs/651968919 
-
 TODO check CHANGELOG
+
+TODO > In computer science, a recursive descent parser is a kind of top-down parser built from a set of mutually recursive procedures (or a non-recursive equivalent) where each such procedure implements one of the nonterminals of the grammar. Thus the structure of the resulting program closely mirrors that of the grammar it recognizes.
+
+TODO https://en.wikipedia.org/wiki/Recursive_descent_parser
