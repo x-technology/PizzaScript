@@ -13,7 +13,7 @@ Our goals are:
 - Understand how programming languages & interpreters work
 - Experiment with WebAssembly
 
-PizzaScript Meetup #3 focuses on a compilation target for programming languages. For PizzaScript we have chosen WebAssembly, because it is an awesome techology supported in main modern browsers and multiple environments. First, we need to understand what is WebAssembly, and we will overview history, key features and benefits of the technology. We'll explore interesting examples and problems we might be facing while implementing the PizzaScript's compilation phase.
+PizzaScript Meetup #3 focuses on a compilation target for programming languages. For PizzaScript we have chosen WebAssembly, because it is an awesome techology supported in main modern browsers and multiple environments. First, we need to understand what is WebAssembly, and we will overview history, key features and benefits of the technology. We'll explore interesting examples and problems we might be facing while implementing a PizzaScript's compilation phase.
 
 Don't miss our past materials:
 - About PizzaScript — Educational Go Open Source Project https://korzio.medium.com/introducing-pizzascript-educational-go-open-source-project-d7a15128db94
