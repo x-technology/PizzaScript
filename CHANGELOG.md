@@ -1,4 +1,4 @@
-## TODO
+## 0.0.4, TODO
 
 - Extend with variables
 - Port to WebAssembly

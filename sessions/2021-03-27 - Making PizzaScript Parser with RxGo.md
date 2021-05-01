@@ -121,7 +121,7 @@ type Token struct {
 }
 ```
 
-- `Parser` - ...
+- `Parser` - program syntax analysis
 
 - `Compile`, `Eval`, or `Interpret`. `PizzaScript` compiles to `WebAssembly`, and we will produce an output in `wasm` or `wat` format.
 
