@@ -1,0 +1,41 @@
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<script src="wasm_exec.js"></script>
+		<script src="wabt.js"></script>
+		<script>
+      const go = new Go();
+      
+      // try {
+      //   WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
+      //     debugger;
+      //     go.run(result.instance);
+      //   });
+      // } catch(e) {
+      //   debugger;
+      // }
+    
+      fetch('main.wasm').then(response => 
+        response.arrayBuffer()
+      ).then(bytes => 
+        WebAssembly.instantiate(bytes, go.importObject)
+      ).then(obj => {
+        go.run(obj.instance)
+
+        wasmEval('1+2')
+      })
+
+      const wasmEval = async (text) => {
+        const m = await new WabtModule()
+        const wat = printMessage(text)
+        const wm = m.parseWat('file.wasm', wat)
+        
+        const binary = wm.toBinary({})
+        const res = await WebAssembly.instantiate(binary.buffer)
+
+        console.log(res.instance.exports.add())
+      }
+		</script>
+	</head>
+	<body></body>
+</html>
