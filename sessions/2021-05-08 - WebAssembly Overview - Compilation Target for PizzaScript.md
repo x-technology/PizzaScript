@@ -1,7 +1,5 @@
 # WebAssembly Overview - Compilation Target for PizzaScript
 
-![pizzascript](/assets/pizzascript.jpg)
-
 - Introduction
   - About us
   - PizzaScript
@@ -15,12 +13,14 @@
 - Summary
   - Feedback
 
-- Get to know `WebAssembly` - understand goals, definitions
+- Get to know `WebAssembly`, understand goals & definitions
 - See `WebAssembly` programmatic usage with Web
 
 # About us
 
 **XTechnology** - *Educational Programming DevOps and Data Science* open source project
+
+![xtechnology logo](/assets/logo-color.png)
 
 ## Goals
 
@@ -33,19 +33,40 @@
 
 ## PizzaScript
 
+![pizzascript](/assets/pizzascript.jpg)
+
 - Learn `Go` language, and key libraries like `RxGo`
 - Understand how programming languages & interpreters work
 - Experiment with `WebAssembly`
 
-PizzaScript Meetup #3 focuses on a compilation target for programming languages. For PizzaScript we have chosen WebAssembly, because it is an awesome techology supported in main modern browsers and multiple environments. First, we need to understand what is WebAssembly, and we will overview history, key features and benefits of the technology. We'll explore interesting examples and problems we might be facing while implementing the PizzaScript's compilation phase.
+Last time...
+
+- Programming Languages & Compilers
+- Pratt Parser
+
+```ps
+// rbp - right binding power
+fun expr(rbp = 0) {
+  // null denotation
+  var left = nud(next())
+  while bp(peek()) > rbp
+    // left denotation
+    left = led(left, next())
+  left
+}
+```
+
+- Pyramid of Doom
+
+And now...
+
+- PizzaScript Meetup #3 focuses on a compilation target for PizzaScript...
 
 # WebAssembly
 
 ![web assembly](/assets/web-assembly-logo.png)
 
-Bringing other languages to Web since 2014?!
-
-[Windows 95 with WebAssembly](https://archive.org/details/win95_in_dosbox)
+### Bringing other languages to Web since 2014?!
 
 ### WebAssembly (abbreviated Wasm) is a **binary instruction format** for **a stack-based virtual machine**. Wasm is designed as a **portable target** for **compilation of high-level languages** like `C/C++/Rust`, enabling deployment on the web for client and server applications.
 
@@ -78,6 +99,34 @@ WebAssembly.instantiateStreaming(fetch(`program.wasm`))
 
 [WasmExplorer Explorer](https://mbebenita.github.io/WasmExplorer/) - nice playground to compile C/C++ to `WebAssembly`
 
+<!-- npx http-serve otus/webassembly/index.html -->
+
+- [Demo - Simple Add Function](otus/webassembly/add.wat) 
+
+```js
+fetch('add.wasm')
+  .then(response => response.arrayBuffer())
+  .then(buffer => WebAssembly.instantiate(buffer))
+  .then(({module, instance}) => {
+    instance.exports.add(1, 1)
+  })
+```
+
+```bash
+# cat add.wat
+(module
+  (memory $mem 1)
+  (func $get (param $x i32) (result i32)
+    get_local $x)
+  (func $add (param $lhs i32) (param $rhs i32) (result i32)
+    ;; (i32.store (i32.const 1111228) (i32.const 1111112))
+    get_local $lhs
+    (call $get (i32.const 8))
+    i32.add)
+  (export "add" (func $add))
+)
+```
+
 ## [History](https://www.youtube.com/watch?v=6r0NKEQqkz0)
 
 - `9 December 2011`, Google Native Client (`NaCl` and `PNaCl`) 😅
@@ -90,22 +139,15 @@ WebAssembly.instantiateStreaming(fetch(`program.wasm`))
 
 ![web assembly](/assets/web-assembly-logo.png)
 
-- `2017 --> WebAssembly 1.0 MVP -->` [Proposals and WIP](https://github.com/WebAssembly/proposals)
-
-> The initial (MVP) WebAssembly API and binary format is complete to the extent that no further design work is possible without implementation experience and significant usage
+- `2017 --> WebAssembly 1.0 MVP --> ` [Proposals and WIP](https://github.com/WebAssembly/proposals)
 
 ## [Use-Cases](https://webassembly.org/docs/use-cases/) and usage examples
 
-
 - [Windows 95 with WebAssembly](https://archive.org/details/win95_in_dosbox)
-- `ZIP` for `WebAssembly` ?!
-  - [Almost](https://github.com/YuJianrong/node-unrar.js)
-
 - [Doom 3](http://www.continuation-labs.com/projects/d3wasm/)
-  - [Demo](http://wasm.continuation-labs.com/d3demo/)
-
-- Dynamic [`Polyfills` not only for `Web`](https://developer.mozilla.org/en-US/docs/WebAssembly/existing_C_to_wasm)
 - [Games](https://hackernoon.com/games-build-on-webassembly-3679b3962a19)
+- [Video Filters](https://mtharrison.github.io/wasmbooth/)
+- [Zip](https://github.com/YuJianrong/node-unrar.js)
 
 ### [Languages and Features Support](https://github.com/appcypher/awesome-wasm-langs)
 
@@ -131,17 +173,16 @@ WebAssembly.instantiateStreaming(fetch(`program.wasm`))
 - [WebAssembly High-Level Goals](https://webassembly.org/docs/high-level-goals/)
   - *execute in the same semantic universe as JavaScript* 🤔
 
-- **No Support**
+And more!
+- [x] Threads
+
+- **Not Supported Yet**
   - Garbage Collector (proposal...) 
   - DOM Access
   - Old Browsers...
 
-And more!
-- [x] Threads
   
 ## `Stack-based Virtual Machine`?
-
-![web assembly actors](/assets/web-assembly-actors.png)
 
 ![Stack-based Virtual Machine](/assets/Stack_3.png)  
 
@@ -167,28 +208,31 @@ And more!
   - `compile()`
   - `instantiate()`
 
-```js
-var importObj = {js: {
-  import1: () => console.log("hello,"),
-  import2: () => console.log("world!"),
-}};
-
-fetch('demo.wasm').then(response =>
-  response.arrayBuffer()
-).then(buffer =>
-  WebAssembly.instantiate(buffer, importObj)
-).then(({module, instance}) =>
-  instance.exports.f()
-);
-```
-
 ## [Modules](https://webassembly.org/docs/modules/)
 
 > The distributable, loadable, and executable unit of code in WebAssembly
 
 - `imports`: `js, env, table, memory`
 
-```wat
+- [Demo - Call Imported API](otus/webassembly/import.wat) 
+
+```js
+// cat import.wat
+const importObj = {js: {
+  import1: () => console.log("hello,"),
+  import2: () => console.log("world!"),
+}}
+
+fetch('import.wasm').then(response =>
+  response.arrayBuffer()
+).then(buffer =>
+  WebAssembly.instantiate(buffer, importObj)
+).then(({module, instance}) => {
+  instance.exports.f()
+})
+```
+
+```bash
 (module
   (import "js" "import1" (func $i1))
   (import "js" "import2" (func $i2))
@@ -204,9 +248,7 @@ fetch('demo.wasm').then(response =>
 <script type="module" src="proposal.wasm"></script>
 ```
 
-## Compile Flow
-
-- `Emscripten`
+## Compilation & Tooling
 
 ```
 C/C++/Rust -> AST -> Binary (.wasm) -> AST -> ...Module
@@ -214,7 +256,8 @@ C/C++/Rust -> AST -> Binary (.wasm) -> AST -> ...Module
 
 [![web assembly compile flow diagram](/assets/webassembly-v8-js-vs-wasm.png)](https://youtu.be/njt-Qzw0mVY?t=1135)
 
-![web assembly compile flow diagram](/assets/web-assembly-compile-flow-diagram.png)
+- `Emscripten`
+- `wabt`
 
 ```bash
 # cmake
@@ -238,95 +281,23 @@ git pull
 source ./emsdk_env.sh
 ```
 
-# Performance
-
-![web-assembly-performance](/assets/web-assembly-performance1.png)
 ![web-assembly-performance](/assets/web-assembly-performance2.png)
 
-# [Demo](npx http-serve otus/webassembly/index.html)
+- [Demo - Fibonacci in c, js, and performance](/Users/rd25xo/Developer/experiments/otus/webassembly/fibonacci.sh)
 
-- [Simple Add Function](otus/webassembly/add.wat) 
-- [Call Imported API](otus/webassembly/import.wat) 
-- [Store API](otus/webassembly/store.wat) 
-
-## [Fibonacci in c, js, and performance](otus/webassembly/fibonacci_main.js)
-
-[![wasi software architecture](/assets/wasi-software-architecture.png)](https://github.com/bytecodealliance/wasmtime/blob/master/docs/wasi-software-architecture.png)
-
-```bash
-node --experimental-wasi-unstable-preview1 --experimental-wasm-bigint index.js ./main.wasm
-```
-
-.hidden[
-```
-node --experimental-wasi-unstable-preview1 --experimental-wasm-bigint
-> wasi
-{ WASI: [Function: WASI] }
-new wasi.WASI({})
-WASI {
-wasiImport: WASI {
-  args_get: [Function: bound args_get],
-  args_sizes_get: [Function: bound args_sizes_get],
-  clock_res_get: [Function: bound clock_res_get],
-  clock_time_get: [Function: bound clock_time_get],
-  environ_get: [Function: bound environ_get],
-  environ_sizes_get: [Function: bound environ_sizes_get],
-  fd_advise: [Function: bound fd_advise],
-  fd_allocate: [Function: bound fd_allocate],
-  fd_close: [Function: bound fd_close],
-  fd_datasync: [Function: bound fd_datasync],
-  fd_fdstat_get: [Function: bound fd_fdstat_get],
-  fd_fdstat_set_flags: [Function: bound fd_fdstat_set_flags],
-  fd_fdstat_set_rights: [Function: bound fd_fdstat_set_rights],
-  fd_filestat_get: [Function: bound fd_filestat_get],
-  fd_filestat_set_size: [Function: bound fd_filestat_set_size],
-  fd_filestat_set_times: [Function: bound fd_filestat_set_times],
-  fd_pread: [Function: bound fd_pread],
-  fd_prestat_get: [Function: bound fd_prestat_get],
-  fd_prestat_dir_name: [Function: bound fd_prestat_dir_name],
-  fd_pwrite: [Function: bound fd_pwrite],
-  fd_read: [Function: bound fd_read],
-  fd_readdir: [Function: bound fd_readdir],
-  fd_renumber: [Function: bound fd_renumber],
-  fd_seek: [Function: bound fd_seek],
-  fd_sync: [Function: bound fd_sync],
-  fd_tell: [Function: bound fd_tell],
-  fd_write: [Function: bound fd_write],
-  path_create_directory: [Function: bound path_create_directory],
-  path_filestat_get: [Function: bound path_filestat_get],
-  path_filestat_set_times: [Function: bound path_filestat_set_times],
-  path_link: [Function: bound path_link],
-  path_open: [Function: bound path_open],
-  path_readlink: [Function: bound path_readlink],
-  path_remove_directory: [Function: bound path_remove_directory],
-  path_rename: [Function: bound path_rename],
-  path_symlink: [Function: bound path_symlink],
-  path_unlink_file: [Function: bound path_unlink_file],
-  poll_oneoff: [Function: bound poll_oneoff],
-  proc_exit: [Function: bound proc_exit],
-  proc_raise: [Function: bound proc_raise],
-  random_get: [Function: bound random_get],
-  sched_yield: [Function: bound sched_yield],
-  sock_recv: [Function: bound sock_recv],
-  sock_send: [Function: bound sock_send],
-  sock_shutdown: [Function: bound sock_shutdown]
-},
-```
-]
-
-### [WebAssembly System Interface (WASI)](https://github.com/bytecodealliance/wasmtime/blob/master/docs/WASI-intro.md)
 
 ## [Go Hello World](https://github.com/golang/go/wiki/WebAssembly#getting-started)
 
 ```bash
 mkdir docs
-GOOS=js GOARCH=wasm go build -o docs/main.wasm main.go
+GOOS=js GOARCH=wasm go build -o docs/main.wasm wasm.go
 cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" docs
 npx http-serve -p 8081 docs
 ```
 
-## What About PizzaScript
+## What About PizzaScript?
 
+- Project Overview
 - [Output wat](https://webassembly.studio/)
 
 ```wat
@@ -354,6 +325,13 @@ npx http-serve -p 8081 docs
 
 - `WebAssembly` is a highly effective inter programming language protocol, which can be executed in browser and other environments in a secure context
 
+## Thanks!
+
+- Where do we go from here?
+  - Extend with variables
+  - ~~Port to WebAssembly~~
+- [What's our next steps?](https://forms.gle/nWSJnX6uH8rLk4iP7)
+
 ## Links
 
 - [Github](https://github.com/x-technology/pizzascript)
@@ -364,18 +342,10 @@ npx http-serve -p 8081 docs
 - [PizzaScript #2 - Parser with RxGo](https://youtu.be/a3RvC2fvr_g)
 
 - [Build Your Own WebAssembly Compiler - Colin Eberhardt, QCon San Francisco 2019](https://www.youtube.com/watch?v=OsGnMm59wb4)
-
 - [Compiling for the Web with WebAssembly (Google I/O '17)](https://www.youtube.com/watch?v=6v4E6oksar0)
-
 - [WebAssembly](https://webassembly.org/)
-
 - [WebAssembly: Disrupting JavaScript - Dan Callahan](https://www.youtube.com/watch?v=7mBf3Gig9io)
-
 - [Why we Need WebAssembly - An Interview with Brendan Eich - Eric Elliott](https://medium.com/javascript-scene/why-we-need-webassembly-an-interview-with-brendan-eich-7fb2a60b0723)
-
 - [WebAssembly Explorer](https://mbebenita.github.io/WasmExplorer/)
-
 - [WebAssembly for Web Developers (Google I/O ’19)](https://www.youtube.com/watch?v=njt-Qzw0mVY)
-
 - [WebAssembly Threads - HTTP 203](https://www.youtube.com/watch?v=x9RP-M6q2Mg)
-
