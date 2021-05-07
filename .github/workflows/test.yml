@@ -15,4 +15,4 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
     - name: Test
-      run: go test -gcflags=-l -v --cover ./...
+      run: go test -gcflags=-l -v --cover $(go list ./... | grep -v wasm)
