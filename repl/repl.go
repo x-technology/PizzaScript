@@ -4,9 +4,9 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"pizzascript/eval"
 	"pizzascript/lexer"
 	"pizzascript/parser"
-	"pizzascript/eval"
 )
 
 const PROMPT = "\n>> "
@@ -23,6 +23,7 @@ func Start(in io.Reader, out io.Writer) {
 		}
 
 		line := scanner.Text()
+		// Compile(line)
 		l := lexer.New(line)
 
 		p := parser.New(l)
@@ -32,4 +33,13 @@ func Start(in io.Reader, out io.Writer) {
 
 		fmt.Println(e.Eval())
 	}
+}
+
+// Compile takes a string, and compiles to WebAssembly, returns an output in wat format
+// TODO move to other module, should not be in repl
+func Compile(input string) string {
+	l := lexer.New(input)
+
+	p := parser.New(l)
+	return p.PrintWat()
 }

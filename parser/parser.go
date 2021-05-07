@@ -62,7 +62,7 @@ func nud(acc interface{}, next token.Token) iterator {
 		it.left = &node
 		it.nud = nil
 	}
-	
+
 	return it
 }
 
@@ -95,7 +95,7 @@ var precendences = map[string]int{
 
 type iterator struct {
 	left     *ast.Node
-	nud    	 *ast.Node
+	nud      *ast.Node
 	operator *token.Token
 	stack    []iterator
 }
@@ -136,7 +136,7 @@ func (p *Parser) Tree() *ast.Node {
 				newIt.stack = append(it.stack, it)
 
 				return nud(newIt, next), nil
-			} 
+			}
 
 			it.operator = &next
 			return it, nil
@@ -160,6 +160,14 @@ func (p *Parser) Print() string {
 	lastItem := p.Tree()
 
 	str := lastItem.ToString()
+	fmt.Println(str)
+	return str
+}
+
+func (p *Parser) PrintWat() string {
+	lastItem := p.Tree()
+
+	str := "(module\n  (func $add (result i32)\n    " + lastItem.ToWat() + "\n  )\n  (export \"add\" (func $add))\n)"
 	fmt.Println(str)
 	return str
 }
